@@ -1,4 +1,5 @@
 # coding=utf-8
+from typing import final
 import win32gui
 import win32con
 import win32api
@@ -7,9 +8,18 @@ import re
 import pyautogui
 import time
 import random
+import ctypes
+import sys
 import xlrd
 import pyperclip
 from globalValue import *
+
+
+def keyExit():
+    time.sleep(2)
+    win32api.keybd_event(VK_CODE['Esc'], 0, 0, 0)  # 按下键
+    win32api.keybd_event(
+        VK_CODE['Esc'], 0, win32con.KEYEVENTF_KEYUP, 0)  # 松开按键
 
 
 def sleepRandom(seconds):
@@ -47,6 +57,44 @@ def openMap():
     print(clickPosition)
     pyautogui.click(clickPosition.x, clickPosition.y, clicks=1,
                     interval=0.2, duration=0.2, button="left")
+
+
+# def mouseMove(shift):
+
+def mouseMove(x, y):
+    sleepRandom(1)
+    centerPos = origin + shiftCenter + randomShift(15)
+    print(centerPos)
+    # pyautogui.moveTo(centerPos.x, centerPos.y)
+    pyautogui.click(centerPos.x, centerPos.y)  # 鼠标移动到
+    # ctypes.windll.user32.SetCursorPos(
+    #     centerPos.x, centerPos.y)  # Mouse moves to
+    # pyautogui.dragRel(x, y)  # drag mouse 10 pixels down
+    moveDirection = position(x, y) + randomShift(15)
+    time.sleep(3)
+    win32api.mouse_event(win32con.MOUSEEVENTF_LEFTDOWN,
+                         0, 0, 0, 0)  # 左键按下
+    sleepRandom(0.5)
+    win32api.mouse_event(win32con.MOUSEEVENTF_ABSOLUTE +
+                         win32con.MOUSEEVENTF_MOVE, moveDirection.x, moveDirection.y, 0, 0)
+    sleepRandom(0.5)
+    win32api.mouse_event(win32con.MOUSEEVENTF_LEFTUP,
+                         0, 0, 0, 0)
+# def mouseMove(x, y):
+#     sleepRandom(1)
+#     centerPos = origin + shiftCenter + randomShift(15)
+#     print(centerPos)
+#     win32api.SetCursorPos([centerPos.x, centerPos.y])  # 鼠标移动到
+#     moveDirection = position(x, y) + randomShift(15)
+#     win32api.mouse_event(win32con.MOUSEEVENTF_LEFTDOWN,
+#                          centerPos.x, centerPos.y, 0, 0)  # 左键按下
+#     sleepRandom(0.5)
+#     # win32api.mouse_event(win32con.MOUSEEVENTF_ABSOLUTE +
+#     #                      win32con.MOUSEEVENTF_MOVE, moveDirection.x, moveDirection.y, 0, 0)
+#     finalPos = centerPos + moveDirection
+#     sleepRandom(0.5)
+#     win32api.mouse_event(win32con.MOUSEEVENTF_LEFTUP,
+#                          finalPos.x, finalPos.y, 0, 0)
 
 
 def mouseClick(clickTimes, lOrR, img, reTry):
@@ -101,22 +149,35 @@ def reset_window_pos(x, y, reName):
             shell = win32com.client.Dispatch("WScript.Shell")
             shell.SendKeys('%')
             win32gui.SetForegroundWindow(hwnd)
+            return 0
+    return 1
 
 
-reset_window_pos(origin.x, origin.y, regexName)
-# openMap()
-input = [['Spacebar', 1, const.shortPress], ['E', 4, const.longPress]]
-key_input(input)
-# # 鼠标定位到(30,50)
-# win32api.SetCursorPos([clickPosition.x, clickPosition.y])
-# # 执行左单键击，若需要双击则延时几毫秒再点击一次即可
-# win32api.mouse_event(win32con.MOUSEEVENTF_LEFTUP |
-#                      win32con.MOUSEEVENTF_LEFTDOWN, 0, 0, 0, 0)
+if __name__ == '__main__':
+    if reset_window_pos(origin.x, origin.y, regexName):
+        print("not found process! over")
+        sys.exit()
 
-# 貌似需要预启动，来获取鼠标
-# pyautogui.click(clickPosition.x, clickPosition.y, clicks=1,
-# interval=0.2, duration=0.2, button="left")
-# time.sleep(3)
+    # 攻击测试
+    # input = [['Spacebar', 1, const.shortPress], ['E', 4, const.longPress]]
+    # key_input(input)
 
-# pyautogui.click(clickPosition.x, clickPosition.y, clicks=1,
-#                 interval=0.2, duration=0.2, button="left")
+    # 地图操作
+    # openMap()
+    # keyExit()
+
+    # 视角移动
+    mouseMove(100, 0)
+    # # 鼠标定位到(30,50)
+    # win32api.SetCursorPos([clickPosition.x, clickPosition.y])
+    # # 执行左单键击，若需要双击则延时几毫秒再点击一次即可
+    # win32api.mouse_event(win32con.MOUSEEVENTF_LEFTUP |
+    #                      win32con.MOUSEEVENTF_LEFTDOWN, 0, 0, 0, 0)
+
+    # 貌似需要预启动，来获取鼠标
+    # pyautogui.click(clickPosition.x, clickPosition.y, clicks=1,
+    # interval=0.2, duration=0.2, button="left")
+    # time.sleep(3)
+
+    # pyautogui.click(clickPosition.x, clickPosition.y, clicks=1,
+    #                 interval=0.2, duration=0.2, button="left")

@@ -26,7 +26,7 @@ class position:
 # 最后两行代码的作用是把const类注册到sys.modules这个全局字典中。
 
 
-class _const:
+class const:
     class ConstError(TypeError):
         pass
 
