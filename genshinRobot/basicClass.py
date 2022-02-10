@@ -1,4 +1,6 @@
 import sys
+import inspect
+import re
 
 
 class genshinState:
@@ -13,7 +15,13 @@ class position:
         self.y = y
 
     def __str__(self):
-        return 'position (%d, %d)' % (self.x, self.y)
+        for line in inspect.getframeinfo(inspect.currentframe().f_back)[3]:
+            m = re.search(
+                r'\bprint\s*\(\s*([A-Za-z_][A-Za-z0-9_]*)\s*\)', line)
+            if m:
+                return 'position '+str(m.group(1))+' (%d, %d)' % (self.x, self.y)
+
+        # return 'position %s (%d, %d)' % (self.__name__, self.x, self.y)
 
     def __add__(self, other):
         return position(self.x+other.x, self.y+other.y)

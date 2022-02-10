@@ -1,4 +1,5 @@
 # coding=utf-8
+from pydoc import cli
 from typing import final
 import win32gui
 import win32con
@@ -17,9 +18,8 @@ from globalValue import *
 
 def keyExit():
     time.sleep(2)
-    win32api.keybd_event(VK_CODE['Esc'], 0, 0, 0)  # 按下键
-    win32api.keybd_event(
-        VK_CODE['Esc'], 0, win32con.KEYEVENTF_KEYUP, 0)  # 松开按键
+    input = [['Esc', 1, const.shortPress]]
+    key_input(input)
 
 
 def sleepRandom(seconds):
@@ -32,8 +32,10 @@ def randomShift(pixel):
 # 输入文字VK_CODE[word]为要输入的文字码
 
 
-def key_input(input_words=''):
+def key_input(input_words):
+    sleepRandom(1)
     for word in input_words:
+        print("key {}".format(word[0]))
         if word[2] == const.shortPress:
             while word[1]:
                 win32api.keybd_event(VK_CODE[word[0]], 0, 0, 0)  # 按下键
@@ -49,14 +51,17 @@ def key_input(input_words=''):
             sleepRandom(1)
 
 
-def openMap():
-    clickPosition = origin + shiftMap
+def click(shiftPos):
+    clickPosition = origin + shiftPos
     print(clickPosition)
     sleepRandom(1)
     clickPosition = clickPosition + randomShift(15)
-    print(clickPosition)
     pyautogui.click(clickPosition.x, clickPosition.y, clicks=1,
                     interval=0.2, duration=0.2, button="left")
+
+
+def openMap():
+    click(shiftMap)
 
 
 # def mouseMove(shift):
@@ -103,35 +108,6 @@ def mouseMove(x, y):
 #                          finalPos.x, finalPos.y, 0, 0)
 
 
-def mouseClick(clickTimes, lOrR, img, reTry):
-    if reTry == 1:
-        while True:
-            location = pyautogui.locateCenterOnScreen(img, confidence=0.9)
-            if location is not None:
-                pyautogui.click(location.x, location.y, clicks=clickTimes,
-                                interval=0.2, duration=0.2, button=lOrR)
-                break
-            print("未找到匹配图片,0.1秒后重试")
-            time.sleep(0.1)
-    elif reTry == -1:
-        while True:
-            location = pyautogui.locateCenterOnScreen(img, confidence=0.9)
-            if location is not None:
-                pyautogui.click(location.x, location.y, clicks=clickTimes,
-                                interval=0.2, duration=0.2, button=lOrR)
-            time.sleep(0.1)
-    elif reTry > 1:
-        i = 1
-        while i < reTry + 1:
-            location = pyautogui.locateCenterOnScreen(img, confidence=0.9)
-            if location is not None:
-                pyautogui.click(location.x, location.y, clicks=clickTimes,
-                                interval=0.2, duration=0.2, button=lOrR)
-                print("重复")
-                i += 1
-            time.sleep(0.1)
-
-
 def reset_window_pos(x, y, reName):
     hWndList = []
     win32gui.EnumWindows(lambda hWnd, param: param.append(hWnd), hWndList)
@@ -159,11 +135,13 @@ def reset_window_pos(x, y, reName):
     return 1
 
 
-if __name__ == '__main__':
-    if reset_window_pos(origin.x, origin.y, regexName):
-        print("not found process! over")
-        sys.exit()
+def receiveJob(jobID):
+    click(shiftJobIcon)
+    click(shiftJobClassIcon[jobID])
+    click(shiftAccIcon)
 
+
+def test():
     # 攻击测试
     # input = [['Spacebar', 1, const.shortPress], ['E', 4, const.longPress]]
     # key_input(input)
@@ -173,7 +151,19 @@ if __name__ == '__main__':
     # keyExit()
 
     # 视角移动
-    mouseMove(100, 0)
+    # mouseMove(100, 0)
+
+    # 接取任务
+    receiveJob(const.worldJob)
+
+
+if __name__ == '__main__':
+    if reset_window_pos(origin.x, origin.y, regexName):
+        print("not found process! over")
+        sys.exit()
+
+    test()
+
     # # 鼠标定位到(30,50)
     # win32api.SetCursorPos([clickPosition.x, clickPosition.y])
     # # 执行左单键击，若需要双击则延时几毫秒再点击一次即可
