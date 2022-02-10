@@ -141,6 +141,88 @@ def receiveJob(jobID):
     click(shiftAccIcon)
 
 
+def checkPicExists(Img, region, confidence):
+    # ,region 4-integer tuple of (left, top, width, height))
+    location = pyautogui.locateCenterOnScreen(
+        Img, region=region, confidence=confidence)
+    if location is not None:
+        print("{} is Existed ({},{})".format(Img, location.x, location.y))
+    else:
+        print("{} is NOT Existed".format(Img))
+    return location
+
+
+def checkInfo(type):
+    if type == const.checkJobReceived:
+        return checkPicExists(checkJobReceivedImg, checkJobReceivedRegion, 0.8)
+
+
+def jobMapEdgeRegion(part):
+    if part == "left":
+        left = jobMapLeft-jobMapSearchHalfWidth
+        top = jobMapTop - jobMapSearchHalfWidth
+        width = 2*jobMapSearchHalfWidth
+        height = 2*jobMapSearchHalfWidth + jobMapBottom-jobMapTop
+        return (left, top, width, height)
+    elif part == "right":
+        left = jobMapRight-jobMapSearchHalfWidth
+        top = jobMapTop - jobMapSearchHalfWidth
+        width = 2*jobMapSearchHalfWidth
+        height = 2*jobMapSearchHalfWidth + jobMapBottom-jobMapTop
+        return (left, top, width, height)
+    elif part == "top":
+        left = jobMapLeft-jobMapSearchHalfWidth
+        top = jobMapTop - jobMapSearchHalfWidth
+        width = 2*jobMapSearchHalfWidth + jobMapRight - jobMapLeft
+        height = 2*jobMapSearchHalfWidth
+        return (left, top, width, height)
+    elif part == "bottom":
+        left = jobMapLeft-jobMapSearchHalfWidth
+        top = jobMapBottom - jobMapSearchHalfWidth
+        width = 2*jobMapSearchHalfWidth + jobMapRight - jobMapLeft
+        height = 2*jobMapSearchHalfWidth
+        return (left, top, width, height)
+    elif part == "center":
+        return centerRegion
+
+
+def checkJobIconMapPosition(direction):
+    if direction == "center":
+        location = checkPicExists(
+            checkJobReceivedImg, jobMapEdgeRegion(direction), 0.7)
+    else:
+        location = checkPicExists(jobMapImg, jobMapEdgeRegion(direction), 0.9)
+    if location is not None:
+        print("jobIcon is in {} ({},{})".format(
+            direction, location.x, location.y))
+    return location
+
+
+def getJobIconMapPosition():
+    direction = ["right", "bottom", "left", "top"]
+    location = None
+    i = 0
+    isJobIconInEdge = 1
+    while location is None and i < len(direction):
+        location = checkJobIconMapPosition(direction[i])
+        i += 1
+    if location is None:
+        print("jobIcon is NOT in Edge")
+        location = checkJobIconMapPosition("center")
+        if location is None:
+            print("jobIcon is NOT Finded!!!")
+            return [None, 0]
+        else:
+            isJobIconInEdge = 0
+    return [location, isJobIconInEdge]
+
+
+def moveMapforJobIcon():
+    time.sleep(2)
+    [location, isJobIconInEdge] = getJobIconMapPosition()
+    print({})
+
+
 def test():
     # 攻击测试
     # input = [['Spacebar', 1, const.shortPress], ['E', 4, const.longPress]]
@@ -154,7 +236,12 @@ def test():
     # mouseMove(100, 0)
 
     # 接取任务
-    receiveJob(const.worldJob)
+    # receiveJob(const.worldJob)
+
+    # 检查 - 任务接取完成
+    if checkInfo(const.checkJobReceived) is not None:
+        openMap()
+        moveMapforJobIcon()
 
 
 if __name__ == '__main__':
