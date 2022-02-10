@@ -18,6 +18,9 @@ class position:
     def __add__(self, other):
         return position(self.x+other.x, self.y+other.y)
 
+    def __sub__(self, other):
+        return position(self.x-other.x, self.y-other.y)
+
 # 定义一个常量类实现常量的功能
 #
 # 该类定义了一个方法__setattr()__,和一个异常ConstError, ConstError类继承

@@ -64,22 +64,28 @@ def openMap():
 def mouseMove(x, y):
     sleepRandom(1)
     centerPos = origin + shiftCenter + randomShift(15)
+    moveDirection = position(x, y) + randomShift(15)
+    beginPos = centerPos - moveDirection
+    finalPos = centerPos + moveDirection
     print(centerPos)
-    # pyautogui.moveTo(centerPos.x, centerPos.y)
-    pyautogui.click(centerPos.x, centerPos.y)  # 鼠标移动到
+    # 800,900表示鼠标拖拽的起始位置，0.2设置鼠标移动快慢
+    pyautogui.moveTo(beginPos.x, beginPos.y, 0.2)
+    # 200,200表示鼠标拖拽的终点位置，0.2设置鼠标拖拽的快慢，“easeOutQuad”表示鼠标拖动先快后慢（多种拖拽方式可选）
+    pyautogui.dragTo(finalPos.x, finalPos.y, 2, pyautogui.easeOutQuad)
+    # pyautogui.click(centerPos.x, centerPos.y)  # 鼠标移动到
     # ctypes.windll.user32.SetCursorPos(
     #     centerPos.x, centerPos.y)  # Mouse moves to
     # pyautogui.dragRel(x, y)  # drag mouse 10 pixels down
-    moveDirection = position(x, y) + randomShift(15)
-    time.sleep(3)
-    win32api.mouse_event(win32con.MOUSEEVENTF_LEFTDOWN,
-                         0, 0, 0, 0)  # 左键按下
-    sleepRandom(0.5)
-    win32api.mouse_event(win32con.MOUSEEVENTF_ABSOLUTE +
-                         win32con.MOUSEEVENTF_MOVE, moveDirection.x, moveDirection.y, 0, 0)
-    sleepRandom(0.5)
-    win32api.mouse_event(win32con.MOUSEEVENTF_LEFTUP,
-                         0, 0, 0, 0)
+    # moveDirection = position(x, y) + randomShift(15)
+    # time.sleep(3)
+    # win32api.mouse_event(win32con.MOUSEEVENTF_LEFTDOWN,
+    #                      0, 0, 0, 0)  # 左键按下
+    # sleepRandom(0.5)
+    # win32api.mouse_event(win32con.MOUSEEVENTF_ABSOLUTE +
+    #                      win32con.MOUSEEVENTF_MOVE, moveDirection.x, moveDirection.y, 0, 0)
+    # sleepRandom(0.5)
+    # win32api.mouse_event(win32con.MOUSEEVENTF_LEFTUP,
+    #                      0, 0, 0, 0)
 # def mouseMove(x, y):
 #     sleepRandom(1)
 #     centerPos = origin + shiftCenter + randomShift(15)
