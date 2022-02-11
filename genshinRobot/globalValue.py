@@ -8,6 +8,7 @@ origin = position(100, 100)
 topBarHeight = position(0, 32)
 quarterMainPageHeight = position(640, 360)
 mainpageCenter = origin + topBarHeight + quarterMainPageHeight
+scale = position(600, 500)
 
 shiftMap = position(144, 130)
 shiftCenter = position(690, 245)
@@ -18,6 +19,9 @@ shiftJobClassIcon = [position(68, 161),
                      position(68, 403),
                      position(68, 483)]
 shiftAccIcon = position(1115, 690)
+
+absoluteAwakeJob = position(184, 351)
+absoluteFirstDialogChoice = position(925, 622)
 
 # const
 const.longPress = 2333
@@ -43,7 +47,21 @@ VK_CODE = {'Esc': 27,
 checkJobReceivedImg = "./Img/checkJobReceivedImg.png"
 checkJobReceivedRegion = (130, 330, 36, 36)
 centerRegion = (101, 132, 1280, 720)
+transportAccRegion = (1137, 772, 130, 100)
+transportTextRegion = (880, 520, 500, 300)
+jobFineTuningRegin = (330, 220, 900, 550)  # 1120, 680
+dialogBoxRegin = (800, 400, 200, 200)
+inDialogIconRegin = (890, 350, 100, 300)
+autoDialogRegin = (160, 150, 150, 70)
 jobMapImg = "./Img/jobMapImg.png"
+jobMapImg2 = "./Img/jobMapImg2.png"
+transportImg = "./Img/transport.png"
+transportAccImg = "./Img/transportAcc.png"
+transportTextImg = "./Img/transportText.png"
+jobFineTuningImg = "./Img/jobFineTuning.png"
+dialogBoxImg = "./Img/dialogBox.png"
+inDialogIcon = "./Img/inDialogIcon.png"
+autoDialogImg = "./Img/autoDialog.png"
 jobMapTop = 228
 jobMapLeft = 203
 jobMapBottom = 755

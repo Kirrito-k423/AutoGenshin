@@ -14,6 +14,7 @@ import sys
 import xlrd
 import pyperclip
 from globalValue import *
+import math
 
 
 def keyExit():
@@ -51,17 +52,27 @@ def key_input(input_words):
             sleepRandom(1)
 
 
-def click(shiftPos):
+def clickAbsolute(absolutePos):
+    print(absolutePos)
+    sleepRandom(1)
+    absolutePos = absolutePos + randomShift(5)
+    pyautogui.click(absolutePos.x, absolutePos.y, clicks=1,
+                    interval=0.2, duration=0.2, button="left")
+    time.sleep(2)
+
+
+def clickShift(shiftPos):
     clickPosition = origin + shiftPos
     print(clickPosition)
     sleepRandom(1)
     clickPosition = clickPosition + randomShift(15)
     pyautogui.click(clickPosition.x, clickPosition.y, clicks=1,
                     interval=0.2, duration=0.2, button="left")
+    time.sleep(2)
 
 
 def openMap():
-    click(shiftMap)
+    clickShift(shiftMap)
 
 
 # def mouseMove(shift):
@@ -136,9 +147,9 @@ def reset_window_pos(x, y, reName):
 
 
 def receiveJob(jobID):
-    click(shiftJobIcon)
-    click(shiftJobClassIcon[jobID])
-    click(shiftAccIcon)
+    clickShift(shiftJobIcon)
+    clickShift(shiftJobClassIcon[jobID])
+    clickShift(shiftAccIcon)
 
 
 def checkPicExists(Img, region, confidence):
@@ -189,7 +200,7 @@ def jobMapEdgeRegion(part):
 def checkJobIconMapPosition(direction):
     if direction == "center":
         location = checkPicExists(
-            checkJobReceivedImg, jobMapEdgeRegion(direction), 0.7)
+            jobMapImg2, jobMapEdgeRegion(direction), 0.7)
     else:
         location = checkPicExists(jobMapImg, jobMapEdgeRegion(direction), 0.9)
     if location is not None:
@@ -217,10 +228,181 @@ def getJobIconMapPosition():
     return [location, isJobIconInEdge]
 
 
+def scaleXY(x, y):
+    bigX = scale.x
+    bigY = scale.y
+    scaleX = bigX/abs(x)
+    scaleY = bigY/abs(y)
+    if scaleX > scaleY:
+        return scaleY
+    else:
+        return scaleX
+
+
+def dragMap(x, y):
+    sleepRandom(1)
+    moveDirection = position(-0.5*x, -0.5*y) + randomShift(50)
+    print(moveDirection)
+    scaleNum = scaleXY(moveDirection.x, moveDirection.y)
+    print(scaleNum)
+    moveDirection = 0.5*scaleNum * moveDirection
+    print(moveDirection)
+    beginPos = mainpageCenter - moveDirection
+    finalPos = mainpageCenter + moveDirection
+    # 800,900表示鼠标拖拽的起始位置，0.2设置鼠标移动快慢
+    pyautogui.moveTo(beginPos.x, beginPos.y, 0.2)
+    # 200,200表示鼠标拖拽的终点位置，0.2设置鼠标拖拽的快慢，“easeOutQuad”表示鼠标拖动先快后慢（多种拖拽方式可选）
+    pyautogui.dragTo(finalPos.x, finalPos.y, 2, pyautogui.easeOutQuad)
+
+
 def moveMapforJobIcon():
+    time.sleep(4)
+    isJobIconInEdge = 1
+    while isJobIconInEdge:
+        [location, isJobIconInEdge] = getJobIconMapPosition()
+        if location is not None and isJobIconInEdge == 0:
+            return location
+        if location is None:
+            # 找不到随机就行
+            location = position(
+                mainpageCenter.x, mainpageCenter.y+100)+randomShift(200)
+        location = position(location.x, location.y)
+        moveDirection = location - mainpageCenter
+        print("direction ({},{})".format(moveDirection.x, moveDirection.y))
+        dragMap(moveDirection.x, moveDirection.y)
+
+
+def distance(a, b):
+    return (a.x-b.x)*(a.x-b.x)+(a.y-b.y)*(a.y-b.y)
+
+
+def splitLine(string):
+    print("--------------------------------{}--------------------------------".format(string))
+
+
+def getNearestTransport(targetPosition):
+    splitLine("getNearestTransport")
+    print(targetPosition)
+    ans = 2*quarterMainPageHeight
+    # Returns a generator that yields (left, top, width, height) tuples for where the image is found on the screen.
+    for i in pyautogui.locateAllOnScreen(
+            transportImg, region=centerRegion, confidence=0.9):
+        x = i[0]+0.5*i[2]
+        y = i[1]+0.5*i[3]
+        transportlocation = position(x, y)
+        print(transportlocation)
+        if(distance(transportlocation, targetPosition) < distance(ans, targetPosition)):
+            ans = transportlocation
+            print(ans)
+    if ans == 2*quarterMainPageHeight:
+        return None
+    else:
+        return ans
+
+
+def transPort(transportPosition):
+    splitLine("transportPosition")
+    clickAbsolute(transportPosition)
+    transportAccLocation = pyautogui.locateCenterOnScreen(
+        transportAccImg, region=transportAccRegion, confidence=0.8)
+    if transportAccLocation is not None:
+        clickShift(shiftAccIcon)
+        return 0
+    else:
+        transportTextLocation = pyautogui.locateCenterOnScreen(
+            transportTextImg, region=transportTextRegion, confidence=0.9)
+    if transportTextLocation is None:
+        print("no transPort showed?!")
+        return -1
+    else:
+        clickAbsolute(position(transportTextLocation.x,
+                               transportTextLocation.y))
+        clickShift(shiftAccIcon)
+        return 0
+
+
+def go2jobTarget():
+    if checkInfo(const.checkJobReceived) is not None:
+        openMap()
+        targetPosition = moveMapforJobIcon()
+        if targetPosition is not None:
+            transportPosition = getNearestTransport(targetPosition)
+            if transportPosition is not None:
+                transPort(transportPosition)
+
+
+def awakeJob():
+    clickAbsolute(absoluteAwakeJob)
+
+
+def fineTuningVisualAngle():
+    location = pyautogui.locateCenterOnScreen(
+        jobFineTuningImg, region=jobFineTuningRegin, confidence=0.8)
+    if location is None:
+        print("no location showed?!")
+        awakeJob()
+        return 1
+    location = position(location.x, location.y)
+    moveDirection = location - mainpageCenter
+    if distance(location, mainpageCenter) < 2*100*100:
+        return 0
+    print("fine tuning direction ({},{})".format(
+        moveDirection.x, moveDirection.y))
+    moveDirection = math.pow(0.5, 3) * moveDirection
+    # print(moveDirection)
+    beginPos = mainpageCenter - moveDirection
+    finalPos = mainpageCenter + moveDirection
+    # 800,900表示鼠标拖拽的起始位置，0.2设置鼠标移动快慢
+    pyautogui.moveTo(beginPos.x, beginPos.y, 0.2)
+    # 200,200表示鼠标拖拽的终点位置，0.2设置鼠标拖拽的快慢，“easeOutQuad”表示鼠标拖动先快后慢（多种拖拽方式可选）
+    pyautogui.dragTo(finalPos.x, finalPos.y, 2, pyautogui.easeOutQuad)
+    return 1
+
+
+def dialogBoxShowed():
+    location = pyautogui.locateCenterOnScreen(
+        dialogBoxImg, region=dialogBoxRegin, confidence=0.8)
+    if location is not None:
+        clickAbsolute(position(location.x, location.y))
+        return 0
+    else:
+        return 1
+
+
+def dialog():
     time.sleep(2)
-    [location, isJobIconInEdge] = getJobIconMapPosition()
-    print({})
+    notFinished = 1
+    while notFinished:
+        time.sleep(1.5)
+        autoDialogLoc = pyautogui.locateCenterOnScreen(
+            autoDialogImg, region=autoDialogRegin, confidence=0.8)
+        choiceLoc = pyautogui.locateCenterOnScreen(
+            inDialogIcon, region=inDialogIconRegin, confidence=0.8)
+        dialogBoxLoc = pyautogui.locateCenterOnScreen(
+            dialogBoxImg, region=dialogBoxRegin, confidence=0.8)
+        if autoDialogLoc is None and choiceLoc is None\
+                and dialogBoxLoc is None:
+            notFinished = 0
+            break
+        if choiceLoc is not None:
+            clickAbsolute(position(choiceLoc.x, choiceLoc.y))
+        clickAbsolute(absoluteFirstDialogChoice)
+    print("Dialog FINISHED!!!")
+
+
+def go2jobTargetDetail():
+    isNeededTuningAngle = 1
+    while isNeededTuningAngle:
+        isNeededTuningAngle = fineTuningVisualAngle()
+    print("tuning FINISHED!!")
+    while dialogBoxShowed():
+        input = [['Control', 1, const.shortPress], [
+            'W', 1, const.longPress]]  # Control ——jump
+        key_input(input)
+        isNeededTuningAngle = 1
+        while isNeededTuningAngle:
+            isNeededTuningAngle = fineTuningVisualAngle()
+    dialog()
 
 
 def test():
@@ -236,12 +418,14 @@ def test():
     # mouseMove(100, 0)
 
     # 接取任务
-    # receiveJob(const.worldJob)
+    if checkInfo(const.checkJobReceived) is None:
+        receiveJob(const.worldJob)
 
-    # 检查 - 任务接取完成
-    if checkInfo(const.checkJobReceived) is not None:
-        openMap()
-        moveMapforJobIcon()
+    # # 检查 - 任务接取完成
+    go2jobTarget()
+
+    # go2jobTargetDetail()
+    # 中间识别阈值
 
 
 if __name__ == '__main__':

@@ -29,6 +29,19 @@ class position:
     def __sub__(self, other):
         return position(self.x-other.x, self.y-other.y)
 
+    def __mul__(self, other):
+        return position(other*self.x, other*self.y)
+
+    def __rmul__(self, other):
+        return position(other*self.x, other*self.y)
+
+    def __eq__(self, other):
+        """Overrides the default implementation"""
+        if isinstance(other, position):
+            return self.x == other.x and self.y == other.y
+        return False
+
+
 # 定义一个常量类实现常量的功能
 #
 # 该类定义了一个方法__setattr()__,和一个异常ConstError, ConstError类继承
