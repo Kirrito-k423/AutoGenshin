@@ -217,10 +217,12 @@ def jobMapEdgeRegion(part):
         return (left, top, width, height)
     elif part == "center":
         return centerRegion
+    elif part == "realCenter":
+        return realCenterRegion
 
 
 def checkJobIconMapPosition(direction):
-    if direction == "center":
+    if direction == "center" or direction == "realCenter":
         location = checkPicExists(
             jobMapImg2, jobMapEdgeRegion(direction), 0.7)
     else:
@@ -235,7 +237,7 @@ def getJobIconMapPosition():
     direction = ["right", "bottom", "left", "top"]
     location = None
     i = 0
-    isJobIconInEdge = 1
+    isJobIconInEdge = "edge"
     while location is None and i < len(direction):
         location = checkJobIconMapPosition(direction[i])
         i += 1
@@ -244,9 +246,14 @@ def getJobIconMapPosition():
         location = checkJobIconMapPosition("center")
         if location is None:
             print("jobIcon is NOT Finded!!!")
-            return [None, 0]
+            return [None, "None"]
         else:
-            isJobIconInEdge = 0
+            centerLoc = checkJobIconMapPosition("realCenter")
+            if centerLoc is None:
+                isJobIconInEdge = "outCenter"
+            else:
+                isJobIconInEdge = "realCenter"
+                location = centerLoc
     return [location, isJobIconInEdge]
 
 
@@ -279,12 +286,13 @@ def dragMap(x, y):
 
 def moveMapforJobIcon():
     time.sleep(4)
-    isJobIconInEdge = 1
-    while isJobIconInEdge:
+    isJobIconInEdge = "edge"
+    while isJobIconInEdge == "edge" or isJobIconInEdge == "outCenter"\
+            or isJobIconInEdge == "None":
         [location, isJobIconInEdge] = getJobIconMapPosition()
-        if location is not None and isJobIconInEdge == 0:
+        if location is not None and isJobIconInEdge == "realCenter":
             return location
-        if location is None:
+        if location is None and isJobIconInEdge == "None":
             # 找不到随机就行
             location = position(
                 mainpageCenter.x, mainpageCenter.y+100)+randomShift(200)
@@ -351,17 +359,17 @@ def jobDistance():
     text = reader.readtext('./tmp/1.png')
     print(text)
     print(text[0][1])
-    if re.findall(r"\d+", text[0][1]) is not None:
-        return int(re.findall(r"\d+", text[0][1])[0])
+    if re.search(r"\d+", text[0][1]) is not None:
+        return int(re.search(r"\d+", text[0][1]).group())
     else:
         print("Ops! recognizeImg failed！")
-        return 400
+        return 300
 
 
 def go2jobTarget():
     jobLoc = checkInfo(const.checkJobReceived)
     distance = jobDistance()
-    while jobLoc is not None and distance > 300:
+    while jobLoc is not None and distance >= 300:
         openMap()
         targetPosition = moveMapforJobIcon()
         if targetPosition is not None:
@@ -407,7 +415,9 @@ def fineTuningVisualAngle(distance):
     return 1
 
 
-def dialogBoxShowed():
+def dialogBoxShowed(distance):
+    if distance > 5:
+        return 1
     location = pyautogui.locateCenterOnScreen(
         dialogBoxImg, region=dialogBoxRegin, confidence=0.8)
     if location is not None:
@@ -445,7 +455,7 @@ def go2jobTargetDetail():
     while isNeededTuningAngle:
         isNeededTuningAngle = fineTuningVisualAngle(distance)
     print("tuning FINISHED!!")
-    while dialogBoxShowed():
+    while dialogBoxShowed(distance):
         distance = jobDistance()
         if distance > 50:
             fly(10, 2)
