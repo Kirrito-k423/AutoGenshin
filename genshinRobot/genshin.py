@@ -298,6 +298,8 @@ def moveMapforJobIcon():
                 mainpageCenter.x, mainpageCenter.y+100)+randomShift(200)
         location = position(location.x, location.y)
         moveDirection = location - mainpageCenter
+        if isJobIconInEdge == "outCenter":
+            moveDirection = 0.4*moveDirection
         print("direction ({},{})".format(moveDirection.x, moveDirection.y))
         dragMap(moveDirection.x, moveDirection.y)
 
@@ -351,24 +353,59 @@ def transPort(transportPosition):
         return 0
 
 
-def jobDistance():
+def isAttack():
     jobLoc = checkInfo(const.checkJobReceived)
-    im = pyautogui.screenshot(region=(jobLoc.x+15, jobLoc.y+13, 140, 70))
-    im.save('./tmp/1.png')
+    im = pyautogui.screenshot(region=(jobLoc.x+15, jobLoc.y-13, 140, 26))
+    im.save('./tmp/isAttack.png')
     reader = easyocr.Reader(['ch_sim', 'en'])
-    text = reader.readtext('./tmp/1.png')
+    text = reader.readtext('./tmp/isAttack.png')
     print(text)
     print(text[0][1])
-    if re.search(r"\d+", text[0][1]) is not None:
-        return int(re.search(r"\d+", text[0][1]).group())
+    if re.search(r"(解救)|(保护)", text[0][1]) is not None:
+        return 1
     else:
-        print("Ops! recognizeImg failed！")
-        return 300
+        return 0
+
+
+def Attack():
+    attackIcon = 'Spacebar'
+    smallSkills = 'E'
+    maxSkills = 'R'
+    input = [[maxSkills, 1, const.shortPress], [attackIcon, 1,
+                                                const.shortPress], [smallSkills, 4, const.longPress]]
+    key_input(input)
+
+
+def toDoTask():
+    while isAttack():
+        Attack()
+
+
+def jobDistance(type):
+    if type == "Big":
+        exceptAns = 300
+    elif type == "Small":
+        exceptAns = 10
+    jobLoc = checkInfo(const.checkJobReceived)
+    im = pyautogui.screenshot(region=(jobLoc.x+15, jobLoc.y+13, 140, 70))
+    im.save('./tmp/jobDistance.png')
+    reader = easyocr.Reader(['ch_sim', 'en'])
+    text = reader.readtext('./tmp/jobDistance.png')
+    print(text)
+    if text != []:
+        if re.search(r"\d+", text[0][1]) is not None:
+            return int(re.search(r"\d+", text[0][1]).group())
+        elif re.search(r"已到达任务区域", text[0][1]) is not None:
+            print("get position！")
+            toDoTask()
+            return 0
+    print("Ops! recognizeImg failed！")
+    return exceptAns
 
 
 def go2jobTarget():
     jobLoc = checkInfo(const.checkJobReceived)
-    distance = jobDistance()
+    distance = jobDistance("Big")
     while jobLoc is not None and distance >= 300:
         openMap()
         targetPosition = moveMapforJobIcon()
@@ -380,7 +417,7 @@ def go2jobTarget():
         while state != "mainPage":
             state = getState()
         jobLoc = checkInfo(const.checkJobReceived)
-        distance = jobDistance()
+        distance = jobDistance("Big")
 
 
 def awakeJob():
@@ -399,6 +436,8 @@ def fineTuningVisualAngle(distance):
         awakeJob()
         return 1
     location = position(location.x, location.y)
+    if location.y > 650 or location.y < 270:
+        accuracyRank = 2
     moveDirection = location - mainpageCenter
     if posDistance(location, mainpageCenter) < 2*100*100:
         return 0
@@ -450,13 +489,13 @@ def dialog():
 
 
 def go2jobTargetDetail():
-    distance = jobDistance()
+    distance = jobDistance("Small")
     isNeededTuningAngle = 1
     while isNeededTuningAngle:
         isNeededTuningAngle = fineTuningVisualAngle(distance)
     print("tuning FINISHED!!")
     while dialogBoxShowed(distance):
-        distance = jobDistance()
+        distance = jobDistance("Small")
         if distance > 50:
             fly(10, 2)
         elif distance > 10:
@@ -467,7 +506,7 @@ def go2jobTargetDetail():
             key_input(input)
         isNeededTuningAngle = 1
         while isNeededTuningAngle:
-            distance = jobDistance()
+            distance = jobDistance("Small")
             isNeededTuningAngle = fineTuningVisualAngle(distance)
     dialog()
 
