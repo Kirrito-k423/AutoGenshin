@@ -15,6 +15,8 @@ import xlrd
 import pyperclip
 from globalValue import *
 import math
+import pytesseract
+import easyocr
 
 
 def keyExit():
@@ -31,6 +33,26 @@ def randomShift(pixel):
     return position(random.randint(-pixel, pixel), random.randint(-pixel, pixel))
 
 # 输入文字VK_CODE[word]为要输入的文字码
+
+
+def fly(times, interval):
+    forward = 'W'
+    jump = 'Control'
+    while times:
+        win32api.keybd_event(VK_CODE[forward], 0, 0, 0)  # 按下键
+        win32api.keybd_event(VK_CODE[jump], 0, 0, 0)  # 按下键
+        sleepRandom(0.3)
+        win32api.keybd_event(
+            VK_CODE[jump], 0, win32con.KEYEVENTF_KEYUP, 0)  # 松开按键
+        sleepRandom(0.3)
+        win32api.keybd_event(VK_CODE[jump], 0, 0, 0)  # 按下键
+        sleepRandom(0.3)
+        win32api.keybd_event(
+            VK_CODE[jump], 0, win32con.KEYEVENTF_KEYUP, 0)  # 松开按键
+        sleepRandom(interval)
+        win32api.keybd_event(
+            VK_CODE[forward], 0, win32con.KEYEVENTF_KEYUP, 0)  # 松开按键
+        times -= 1
 
 
 def key_input(input_words):
@@ -165,7 +187,7 @@ def checkPicExists(Img, region, confidence):
 
 def checkInfo(type):
     if type == const.checkJobReceived:
-        return checkPicExists(checkJobReceivedImg, checkJobReceivedRegion, 0.8)
+        return checkPicExists(checkJobReceivedImg, checkJobReceivedRegion, 0.7)
 
 
 def jobMapEdgeRegion(part):
@@ -272,7 +294,7 @@ def moveMapforJobIcon():
         dragMap(moveDirection.x, moveDirection.y)
 
 
-def distance(a, b):
+def posDistance(a, b):
     return (a.x-b.x)*(a.x-b.x)+(a.y-b.y)*(a.y-b.y)
 
 
@@ -291,7 +313,7 @@ def getNearestTransport(targetPosition):
         y = i[1]+0.5*i[3]
         transportlocation = position(x, y)
         print(transportlocation)
-        if(distance(transportlocation, targetPosition) < distance(ans, targetPosition)):
+        if(posDistance(transportlocation, targetPosition) < posDistance(ans, targetPosition)):
             ans = transportlocation
             print(ans)
     if ans == 2*quarterMainPageHeight:
@@ -321,21 +343,47 @@ def transPort(transportPosition):
         return 0
 
 
+def jobDistance():
+    jobLoc = checkInfo(const.checkJobReceived)
+    im = pyautogui.screenshot(region=(jobLoc.x+15, jobLoc.y+13, 140, 70))
+    im.save('./tmp/1.png')
+    reader = easyocr.Reader(['ch_sim', 'en'])
+    text = reader.readtext('./tmp/1.png')
+    print(text)
+    print(text[0][1])
+    if re.findall(r"\d+", text[0][1]) is not None:
+        return int(re.findall(r"\d+", text[0][1])[0])
+    else:
+        print("Ops! recognizeImg failed！")
+        return 400
+
+
 def go2jobTarget():
-    if checkInfo(const.checkJobReceived) is not None:
+    jobLoc = checkInfo(const.checkJobReceived)
+    distance = jobDistance()
+    while jobLoc is not None and distance > 300:
         openMap()
         targetPosition = moveMapforJobIcon()
         if targetPosition is not None:
             transportPosition = getNearestTransport(targetPosition)
             if transportPosition is not None:
                 transPort(transportPosition)
+        state = "loading"
+        while state != "mainPage":
+            state = getState()
+        jobLoc = checkInfo(const.checkJobReceived)
+        distance = jobDistance()
 
 
 def awakeJob():
     clickAbsolute(absoluteAwakeJob)
 
 
-def fineTuningVisualAngle():
+def fineTuningVisualAngle(distance):
+    if distance < 200:
+        accuracyRank = 4
+    else:
+        accuracyRank = 3
     location = pyautogui.locateCenterOnScreen(
         jobFineTuningImg, region=jobFineTuningRegin, confidence=0.8)
     if location is None:
@@ -344,11 +392,11 @@ def fineTuningVisualAngle():
         return 1
     location = position(location.x, location.y)
     moveDirection = location - mainpageCenter
-    if distance(location, mainpageCenter) < 2*100*100:
+    if posDistance(location, mainpageCenter) < 2*100*100:
         return 0
     print("fine tuning direction ({},{})".format(
         moveDirection.x, moveDirection.y))
-    moveDirection = math.pow(0.5, 3) * moveDirection
+    moveDirection = math.pow(0.5, accuracyRank) * moveDirection
     # print(moveDirection)
     beginPos = mainpageCenter - moveDirection
     finalPos = mainpageCenter + moveDirection
@@ -370,6 +418,7 @@ def dialogBoxShowed():
 
 
 def dialog():
+    splitLine("dialog")
     time.sleep(2)
     notFinished = 1
     while notFinished:
@@ -391,24 +440,50 @@ def dialog():
 
 
 def go2jobTargetDetail():
+    distance = jobDistance()
     isNeededTuningAngle = 1
     while isNeededTuningAngle:
-        isNeededTuningAngle = fineTuningVisualAngle()
+        isNeededTuningAngle = fineTuningVisualAngle(distance)
     print("tuning FINISHED!!")
     while dialogBoxShowed():
-        input = [['Control', 1, const.shortPress], [
-            'W', 1, const.longPress]]  # Control ——jump
-        key_input(input)
+        distance = jobDistance()
+        if distance > 50:
+            fly(10, 2)
+        elif distance > 10:
+            fly(1, 3)
+        else:
+            input = [['Control', 1, const.shortPress], [
+                'W', 1, const.longPress]]  # Control ——jump
+            key_input(input)
         isNeededTuningAngle = 1
         while isNeededTuningAngle:
-            isNeededTuningAngle = fineTuningVisualAngle()
+            distance = jobDistance()
+            isNeededTuningAngle = fineTuningVisualAngle(distance)
     dialog()
+
+
+def getState():
+    state = "loading"
+    while state == "loading":
+        print("state check…………")
+        time.sleep(1)
+        location = pyautogui.locateCenterOnScreen(
+            decideMianIconImg, region=decideMianIconRegin, confidence=0.8)
+        if location is not None:
+            return "mainPage"
+        location = pyautogui.locateCenterOnScreen(
+            decideMapExitIconImg, region=decideMapExitIconRegin, confidence=0.8)
+        if location is not None:
+            return "map"
 
 
 def test():
     # 攻击测试
     # input = [['Spacebar', 1, const.shortPress], ['E', 4, const.longPress]]
     # key_input(input)
+
+    # 滑翔测试
+    # fly(10, 2)
 
     # 地图操作
     # openMap()
@@ -418,14 +493,18 @@ def test():
     # mouseMove(100, 0)
 
     # 接取任务
-    if checkInfo(const.checkJobReceived) is None:
-        receiveJob(const.worldJob)
+    # if checkInfo(const.checkJobReceived) is None:
+    #     receiveJob(const.worldJob)
 
-    # # 检查 - 任务接取完成
+    # # # 检查 - 任务接取完成，地图移动 传送
     go2jobTarget()
 
-    # go2jobTargetDetail()
-    # 中间识别阈值
+    # 微调视角，移动，对话
+    go2jobTargetDetail()
+
+    # 数字识别
+    # jobLoc = checkInfo(const.checkJobReceived)
+    # distance = jobDistance()
 
 
 if __name__ == '__main__':
