@@ -23,12 +23,13 @@ shiftAccIcon = position(1115, 690)
 absoluteAwakeJob = position(184, 351)
 absoluteFirstDialogChoice = position(925, 622)
 
+# 相对偏移
+wordShiftIconInJobPage = position(-380, 0)
+
 # const
 const.longPress = 2333
 const.shortPress = 'yahaha'
-
 const.worldJob = 4
-
 const.checkJobReceived = 1
 # code https://blog.csdn.net/chang1976272446/article/details/103761029
 # https://cxymm.net/article/weixin_39552874/110753639
@@ -56,6 +57,7 @@ inDialogIconRegin = (890, 350, 100, 300)
 autoDialogRegin = (160, 150, 150, 70)
 decideMianIconRegin = (120, 140, 80, 80)
 decideMapExitIconRegin = (1270, 140, 120, 100)
+jobPageJobIconRegin = (560, 180, 140, 600)
 jobMapImg = "./Img/jobMapImg.png"
 jobMapImg2 = "./Img/jobMapImg2.png"
 transportImg = "./Img/transport.png"
@@ -67,6 +69,7 @@ inDialogIcon = "./Img/inDialogIcon.png"
 autoDialogImg = "./Img/autoDialog.png"
 decideMianIconImg = "./Img/decideMianIcon.png"
 decideMapExitIconImg = "./Img/decideMapExitIcon.png"
+jobPageJobIconImg = "./Img/jobPageJobIcon.png"
 jobMapTop = 228
 jobMapLeft = 203
 jobMapBottom = 755

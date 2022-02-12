@@ -1,5 +1,6 @@
 # coding=utf-8
 from pydoc import cli
+from sre_parse import State
 from typing import final
 import win32gui
 import win32con
@@ -286,6 +287,7 @@ def dragMap(x, y):
 
 def moveMapforJobIcon():
     time.sleep(4)
+    trytime = 3
     isJobIconInEdge = "edge"
     while isJobIconInEdge == "edge" or isJobIconInEdge == "outCenter"\
             or isJobIconInEdge == "None":
@@ -294,8 +296,12 @@ def moveMapforJobIcon():
             return location
         if location is None and isJobIconInEdge == "None":
             # 找不到随机就行
-            location = position(
-                mainpageCenter.x, mainpageCenter.y+100)+randomShift(200)
+            if trytime > 0:
+                trytime -= 1
+                location = position(
+                    mainpageCenter.x, mainpageCenter.y+100)+randomShift(200)
+            else:
+                return None
         location = position(location.x, location.y)
         moveDirection = location - mainpageCenter
         if isJobIconInEdge == "outCenter":
@@ -309,7 +315,9 @@ def posDistance(a, b):
 
 
 def splitLine(string):
+    print("\n")
     print("--------------------------------{}--------------------------------".format(string))
+    print("\n")
 
 
 def getNearestTransport(targetPosition):
@@ -381,18 +389,16 @@ def toDoTask():
         Attack()
 
 
-def jobDistance(type):
-    if type == "Big":
-        exceptAns = 300
-    elif type == "Small":
-        exceptAns = 10
+def jobDistanceFromMianPage():
+    splitLine("jobDistanceFromMianPage")
     jobLoc = checkInfo(const.checkJobReceived)
     im = pyautogui.screenshot(region=(jobLoc.x+15, jobLoc.y+13, 140, 70))
-    im.save('./tmp/jobDistance.png')
+    im.save('./tmp/jobDistanceFromMianPage.png')
     reader = easyocr.Reader(['ch_sim', 'en'])
-    text = reader.readtext('./tmp/jobDistance.png')
+    text = reader.readtext('./tmp/jobDistanceFromMianPage.png')
     print(text)
     if text != []:
+        print(text[0][1])
         if re.search(r"\d+", text[0][1]) is not None:
             return int(re.search(r"\d+", text[0][1]).group())
         elif re.search(r"已到达任务区域", text[0][1]) is not None:
@@ -400,7 +406,40 @@ def jobDistance(type):
             toDoTask()
             return 0
     print("Ops! recognizeImg failed！")
-    return exceptAns
+    return None
+
+
+def jobDistanceFromJobPage():
+    splitLine("jobDistanceFromJobPage")
+    clickShift(shiftJobIcon)
+    jobPageJobIconLoc = pyautogui.locateCenterOnScreen(
+        jobPageJobIconImg, region=jobPageJobIconRegin, confidence=0.8)
+    wordLoc = jobPageJobIconLoc-wordShiftIconInJobPage
+    im = pyautogui.screenshot(region=(wordLoc.x, wordLoc.y, 100, 25))
+    im.save('./tmp/jobDistanceFromJobPage.png')
+    reader = easyocr.Reader(['ch_sim', 'en'])
+    text = reader.readtext('./tmp/jobDistanceFromJobPage.png')
+    print(text)
+    if text != []:
+        print(text[0][1])
+        if re.search(r"\d+", text[0][1]) is not None:
+            return int(re.search(r"\d+", text[0][1]).group())
+    print("Ops!Ops! recognizeImg failed！")
+    return None
+
+
+def jobDistance(type):
+    if type == "Big":
+        exceptAns = 300
+    elif type == "Small":
+        exceptAns = 10
+    distance = jobDistanceFromMianPage()
+    if distance is None:
+        distance = jobDistanceFromJobPage()
+    if distance is None:
+        return exceptAns
+    else:
+        return distance
 
 
 def go2jobTarget():
@@ -413,6 +452,8 @@ def go2jobTarget():
             transportPosition = getNearestTransport(targetPosition)
             if transportPosition is not None:
                 transPort(transportPosition)
+        else:
+            print("Not find job target in Map")
         state = "loading"
         while state != "mainPage":
             state = getState()
