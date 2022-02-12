@@ -471,6 +471,16 @@ def toDoTask():
         findSomeNear()
 
 
+def fixEasyOCRNumberResult(string):
+    ans = ''
+    for word in string:
+        if word in easyOCRFix:
+            ans += easyOCRFix[word]
+        else:
+            ans += word
+    return ans[:-1]+'m'
+
+
 def jobDistanceFromMainPage():
     splitLine("jobDistanceFromMainPage")
     jobLoc = checkInfo(const.checkJobReceived)
@@ -481,19 +491,25 @@ def jobDistanceFromMainPage():
     print(text)
     if text != []:
         passPrint(text[0][1])
-        if re.search(r"\d+", text[0][1]) is not None:
-            return int(re.search(r"\d+", text[0][1]).group())
-        elif re.search(r"(到达)|(区域)", text[0][1]) is not None:
+        if re.search(r"(到达)|(区域)", text[0][1]) is not None:
             completePrint("Get Position！")
             return -1
+        else:
+            text = fixEasyOCRNumberResult(text[0][1])
+            colorPrint(text, 'magenta')
+            if re.search(r"\d+", text) is not None:
+                return int(re.search(r"\d+", text).group())
+
     reader = easyocr.Reader(['en'])
     text = reader.readtext(
         './tmp/jobDistanceFromMainPage.png')
     print(text)
     if text != []:
         passPrint(text[0][1])
-        if re.search(r"\d+", text[0][1]) is not None:
-            return int(re.search(r"\d+", text[0][1]).group())
+        text = fixEasyOCRNumberResult(text[0][1])
+        colorPrint(text, 'magenta')
+        if re.search(r"\d+", text) is not None:
+            return int(re.search(r"\d+", text).group())
     errorPrint("Ops! recognizeImg failed！")
     return None
 
@@ -520,8 +536,10 @@ def jobDistanceFromJobPage():
     exitJobPage()
     if text != []:
         passPrint(text[0][1])
-        if re.search(r"\d+", text[0][1]) is not None:
-            return int(re.search(r"\d+", text[0][1]).group())
+        text = fixEasyOCRNumberResult(text[0][1])
+        colorPrint(text, 'magenta')
+        if re.search(r"\d+", text) is not None:
+            return int(re.search(r"\d+", text).group())
     errorPrint("Ops!Ops! recognizeImg failed！")
     return None
 
@@ -597,7 +615,7 @@ def fineTuningVisualAngle(distance):
     if location is None:
         errorPrint("mainPage no location showed?!")
         awakeJob()
-        if jobDistance() == -1:
+        if jobDistance("Small") == -1:
             return -1
         else:
             return 1
@@ -739,10 +757,10 @@ def test():
     #     receiveJob(const.worldJob)
 
     # # # 检查 - 任务接取完成，地图移动 传送
-    # go2jobTarget(1)
-    # completePrint("Big Move Complete!")
-    # # 微调视角，移动，对话
-    # go2jobTargetDetail()
+    go2jobTarget(1)
+    completePrint("Big Move Complete!")
+    # 微调视角，移动，对话
+    go2jobTargetDetail()
 
     toDoTask()
 
