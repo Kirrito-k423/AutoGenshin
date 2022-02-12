@@ -58,11 +58,9 @@ def randomShift(pixel):
 # 输入文字VK_CODE[word]为要输入的文字码
 
 
-def fly(times, interval):
-    forward = 'W'
-    jump = 'Control'
+def fly(times, interval, direction):
     while times:
-        win32api.keybd_event(VK_CODE[forward], 0, 0, 0)  # 按下键
+        win32api.keybd_event(VK_CODE[direction], 0, 0, 0)  # 按下键
         win32api.keybd_event(VK_CODE[jump], 0, 0, 0)  # 按下键
         sleepRandom(0.3)
         win32api.keybd_event(
@@ -74,12 +72,13 @@ def fly(times, interval):
             VK_CODE[jump], 0, win32con.KEYEVENTF_KEYUP, 0)  # 松开按键
         sleepRandom(interval)
         win32api.keybd_event(
-            VK_CODE[forward], 0, win32con.KEYEVENTF_KEYUP, 0)  # 松开按键
+            VK_CODE[direction], 0, win32con.KEYEVENTF_KEYUP, 0)  # 松开按键
         times -= 1
 
 
 def key_input(input_words):
-    sleepRandom(1)
+    interval = 1
+    sleepRandom(interval)
     for word in input_words:
         print("key {}".format(word[0]))
         if word[2] == const.shortPress:
@@ -87,14 +86,14 @@ def key_input(input_words):
                 win32api.keybd_event(VK_CODE[word[0]], 0, 0, 0)  # 按下键
                 win32api.keybd_event(
                     VK_CODE[word[0]], 0, win32con.KEYEVENTF_KEYUP, 0)  # 松开按键
-                sleepRandom(1)
+                sleepRandom(interval)
                 word[1] -= 1
         elif word[2] == const.longPress:
             win32api.keybd_event(VK_CODE[word[0]], 0, 0, 0)  # 按下键
             time.sleep(word[1])
             win32api.keybd_event(
                 VK_CODE[word[0]], 0, win32con.KEYEVENTF_KEYUP, 0)  # 松开按键
-            sleepRandom(1)
+            sleepRandom(interval)
 
 
 def clickAbsolute(absolutePos):
@@ -104,6 +103,14 @@ def clickAbsolute(absolutePos):
     pyautogui.click(absolutePos.x, absolutePos.y, clicks=1,
                     interval=0.2, duration=0.2, button="left")
     time.sleep(2)
+
+
+def quickClickAbsolute(absolutePos):
+    print(absolutePos)
+    sleepRandom(0.5)
+    absolutePos = absolutePos + randomShift(5)
+    pyautogui.click(absolutePos.x, absolutePos.y, clicks=1,
+                    interval=0.2, duration=0.2, button="left")
 
 
 def clickShift(shiftPos):
@@ -392,19 +399,39 @@ def isAttack():
         return 0
 
 
-def Attack():
-    colorPrint("塔塔开！！！", "yellow")
-    attackIcon = 'Spacebar'
-    smallSkills = 'E'
-    maxSkills = 'R'
-    input = [[maxSkills, 1, const.shortPress], [attackIcon, 1,
-                                                const.shortPress], [smallSkills, 4, const.longPress]]
+def fourBigSkills():
+    # three other gui
+    quickClickAbsolute(absolutePerson1Skill)
+    quickClickAbsolute(absolutePerson2Skill)
+    quickClickAbsolute(absolutePerson3Skill)
+
+
+def changePerson(num):
+    quickClickAbsolute(absolutePerson[num-1])
+
+
+def combo():
+    input = [[attackIcon, 5, const.shortPress],
+             [smallSkills, 1, const.longPress],
+             [attackIcon, 5, const.shortPress]]
     key_input(input)
+
+
+def Attack(num):
+    colorPrint("塔塔开！！！", "yellow")
+    combo()
+    fourBigSkills()
+    combo()
+    changePerson(num)
+    fly(1, 1, forward)
 
 
 def toDoTask():
     while isAttack():
-        Attack()
+        trytime = 3
+        while trytime > 0:
+            Attack(trytime)
+            trytime -= 1
 
 
 def jobDistanceFromMainPage():
@@ -419,7 +446,7 @@ def jobDistanceFromMainPage():
         print(text[0][1])
         if re.search(r"\d+", text[0][1]) is not None:
             return int(re.search(r"\d+", text[0][1]).group())
-        elif re.search(r"已到达任务区域", text[0][1]) is not None:
+        elif re.search(r"(到达)|(区域)", text[0][1]) is not None:
             completePrint("Get Position！")
             return -1
     reader = easyocr.Reader(['en'])
@@ -493,8 +520,11 @@ def go2jobTargetOne():
 
 
 def go2jobTarget():
+    splitLine("go2jobTarget")
     jobLoc = checkInfo(const.checkJobReceived)
     distance = jobDistance("Big")
+    if distance == -1:
+        return -1
     while jobLoc is not None and distance >= 300:
         go2jobTargetOne()
         jobLoc = checkInfo(const.checkJobReceived)
@@ -579,6 +609,8 @@ def dialog():
 
 def go2jobTargetDetail():
     distance = jobDistance("Small")
+    if distance == -1:
+        return -1
     isNeededTuningAngle = 1
     while isNeededTuningAngle:
         isNeededTuningAngle = fineTuningVisualAngle(distance)
@@ -588,9 +620,9 @@ def go2jobTargetDetail():
         if distance == -1:
             return -1
         if distance > 50:
-            fly(10, 2)
+            fly(10, 2, forward)
         elif distance > 10:
-            fly(1, 3)
+            fly(1, 3, forward)
         else:
             input = [['Control', 1, const.shortPress], [
                 'W', 1, const.longPress]]  # Control ——jump
@@ -630,7 +662,7 @@ def test():
     # key_input(input)
 
     # 滑翔测试
-    # fly(10, 2)
+    # fly(10, 2,forward)
 
     # 地图操作
     # openMap()
@@ -644,10 +676,10 @@ def test():
     #     receiveJob(const.worldJob)
 
     # # # 检查 - 任务接取完成，地图移动 传送
-    go2jobTarget()
-    completePrint("Big Move Complete!")
-    # 微调视角，移动，对话
-    go2jobTargetDetail()
+    # go2jobTarget()
+    # completePrint("Big Move Complete!")
+    # # 微调视角，移动，对话
+    # go2jobTargetDetail()
 
     toDoTask()
 

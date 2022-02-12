@@ -10,6 +10,15 @@ quarterMainPageHeight = position(640, 360)
 mainpageCenter = origin + topBarHeight + quarterMainPageHeight
 scale = position(600, 500)
 
+# 攻击按键映射
+attackIcon = 'Spacebar'
+smallSkills = 'E'
+maxSkills = 'R'
+forward = 'W'
+backward = 'S'
+jump = 'Control'
+
+# 位置
 shiftMap = position(144, 130)
 shiftCenter = position(690, 245)
 shiftJobIcon = position(50, 200)
@@ -22,6 +31,12 @@ shiftAccIcon = position(1115, 690)
 
 absoluteAwakeJob = position(151, 351)
 absoluteFirstDialogChoice = position(925, 622)
+absolutePerson1Skill = position(1164, 295)
+absolutePerson2Skill = position(1164, 368)
+absolutePerson3Skill = position(1164, 443)
+absolutePerson = [position(1320, 295),
+                  position(1164, 368),
+                  position(1164, 443)]
 
 # 相对偏移
 wordShiftIconInJobPage = position(-380, 0)
@@ -39,6 +54,7 @@ VK_CODE = {'Esc': 27,
            'S':	83,
            'D':	68,
            'E':	69,
+           'R': 0x52,
            'Shift'	: 16,
            'Control'	: 17,
            'Spacebar':	32
