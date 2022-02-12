@@ -150,9 +150,14 @@ def exitJobPage():
 
 def back2mainPage():
     splitLine("back2mainPage")
-    while getState() != "mainPage":
-        keyExit()
+    state = getState()
+    while state != "mainPage":
+        if state == "dialog":
+            dialog()
+        else:
+            keyExit()
         print("back2mainPage…………")
+        state = getState()
 # def mouseMove(shift):
 
 
@@ -664,9 +669,12 @@ def dialog():
         # dialogBoxLoc = pyautogui.locateCenterOnScreen(
         #     dialogBoxImg, region=dialogBoxRegin, confidence=0.8)
         quickClickAbsolute(shiftCenter)
-        if getState() == "mainPage":
+        state = getState()
+        if state == "mainPage":
             notFinished = 0
             break
+        elif state == "dialogX":
+            quickClickAbsolute(absolutedialogX)
         if choiceLoc is not None:
             quickClickAbsolute(position(choiceLoc.x, choiceLoc.y))
         quickClickAbsolute(absoluteFirstDialogChoice)
@@ -695,18 +703,22 @@ def go2jobTargetDetail():
             stuckCount = 0
             continue
         distance = jobDistance("Small")
-        jumpDownFunc()
-        fly(1, 1, left)
+
         if distance == -1:
             return -1
-        if distance > 100:
-            fly(10, 2, forward)
-        elif distance > 30:
-            fly(6, 2, forward)
-        elif distance > 10:
-            fly(3, 2, forward)
         else:
-            fly(1, 1, forward)
+            if distance < 10:
+                fly(1, 1, forward)
+            else:
+                jumpDownFunc()
+                fly(1, 1, left)
+                if distance > 100:
+                    fly(10, 2, forward)
+                elif distance > 30:
+                    fly(6, 2, forward)
+                elif distance > 10:
+                    fly(3, 2, forward)
+
             # input = [['Control', 1, const.shortPress], [
             #     'W', 1, const.longPress]]  # Control ——jump
             # key_input(input)
@@ -724,19 +736,30 @@ def getState():
         location = pyautogui.locateCenterOnScreen(
             decideMainIconImg, region=decideMainIconRegin, confidence=0.8)
         if location is not None:
-            return "mainPage"
+            state = "mainPage"
+            break
         location = pyautogui.locateCenterOnScreen(
             uniqueJobPageImg, region=uniqueJobPageRegin, confidence=0.8)
         if location is not None:
-            return "jobPage"
+            state = "jobPage"
+            break
         autoDialogLoc = pyautogui.locateCenterOnScreen(
             autoDialogImg, region=autoDialogRegin, confidence=0.8)
         if autoDialogLoc is not None:
-            return "dialog"
+            state = "dialog"
+            break
+        location = pyautogui.locateCenterOnScreen(
+            dialogXImg, region=dialogXRegin, confidence=0.8)
+        if location is not None:
+            state = "dialogX"
+            break
         location = pyautogui.locateCenterOnScreen(
             decideMapExitIconImg, region=decideMapExitIconRegin, confidence=0.8)
         if location is not None:
-            return "map"
+            state = "map"
+            break
+    passPrint("{} is state".format(state))
+    return state
 
 
 def simpleAttackTest():
