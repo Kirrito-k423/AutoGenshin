@@ -519,20 +519,18 @@ def go2jobTargetOne():
     waitPageChangeTo("mainPage")
 
 
-def go2jobTarget():
+def go2jobTarget(maxtime):
     splitLine("go2jobTarget")
-    jobLoc = checkInfo(const.checkJobReceived)
-    distance = jobDistance("Big")
-    if distance == -1:
+    go2jobTargetOne()
+    distance = checkJobDistance()
+    if maxtime == 0:
+        return 0
+    elif distance == -1:
         return -1
-    while jobLoc is not None and distance >= 300:
-        go2jobTargetOne()
-        jobLoc = checkInfo(const.checkJobReceived)
-        distance = jobDistance("Big")
-    if checkJobDistance() < 300:
-        go2jobTargetOne()
+    elif distance < 300:
+        return 0
     else:
-        go2jobTarget()
+        go2jobTarget(maxtime-1)
 
 
 def awakeJob():
@@ -655,31 +653,28 @@ def getState():
             return "map"
 
 
+def simpleAttackTest():
+    while 1:
+        trytime = 3
+        while trytime > 0:
+            Attack(trytime)
+            trytime -= 1
+
+
 def test():
     back2mainPage()
     # 攻击测试
-    # input = [['Spacebar', 1, const.shortPress], ['E', 4, const.longPress]]
-    # key_input(input)
-
-    # 滑翔测试
-    # fly(10, 2,forward)
-
-    # 地图操作
-    # openMap()
-    # keyExit()
-
-    # 视角移动
-    # mouseMove(100, 0)
+    # simpleAttackTest()
 
     # 接取任务
     # if checkInfo(const.checkJobReceived) is None:
     #     receiveJob(const.worldJob)
 
     # # # 检查 - 任务接取完成，地图移动 传送
-    # go2jobTarget()
-    # completePrint("Big Move Complete!")
-    # # 微调视角，移动，对话
-    # go2jobTargetDetail()
+    go2jobTarget(1)
+    completePrint("Big Move Complete!")
+    # 微调视角，移动，对话
+    go2jobTargetDetail()
 
     toDoTask()
 
