@@ -18,6 +18,28 @@ from globalValue import *
 import math
 import pytesseract
 import easyocr
+from termcolor import colored
+import os
+
+
+def errorPrint(message):
+    os.system('color')
+    print(colored(message, 'red'))
+
+
+def colorPrint(message, color):
+    os.system('color')
+    print(colored(message, color))
+
+
+def passPrint(message):
+    os.system('color')
+    print(colored(message, 'green'))
+
+
+def completePrint(message):
+    os.system('color')
+    print("--------------------------------{}--------------------------------".format(colored(message, 'green')))
 
 
 def keyExit():
@@ -95,10 +117,30 @@ def clickShift(shiftPos):
 
 
 def openMap():
+    splitLine("openMap")
     clickShift(shiftMap)
+    waitPageChangeTo("map")
 
 
+def openJobPage():
+    splitLine("openJobPage")
+    clickShift(shiftJobIcon)
+    waitPageChangeTo("jobPage")
+
+
+def exitJobPage():
+    splitLine("exitJobPage")
+    keyExit()
+    waitPageChangeTo("mainPage")
+
+
+def back2mainPage():
+    splitLine("back2mainPage")
+    while getState() != "mainPage":
+        keyExit()
+        print("back2mainPage…………")
 # def mouseMove(shift):
+
 
 def mouseMove(x, y):
     sleepRandom(1)
@@ -112,34 +154,6 @@ def mouseMove(x, y):
     # 200,200表示鼠标拖拽的终点位置，0.2设置鼠标拖拽的快慢，“easeOutQuad”表示鼠标拖动先快后慢（多种拖拽方式可选）
     pyautogui.dragTo(finalPos.x, finalPos.y, 2, pyautogui.easeOutQuad)
     # pyautogui.click(centerPos.x, centerPos.y)  # 鼠标移动到
-    # ctypes.windll.user32.SetCursorPos(
-    #     centerPos.x, centerPos.y)  # Mouse moves to
-    # pyautogui.dragRel(x, y)  # drag mouse 10 pixels down
-    # moveDirection = position(x, y) + randomShift(15)
-    # time.sleep(3)
-    # win32api.mouse_event(win32con.MOUSEEVENTF_LEFTDOWN,
-    #                      0, 0, 0, 0)  # 左键按下
-    # sleepRandom(0.5)
-    # win32api.mouse_event(win32con.MOUSEEVENTF_ABSOLUTE +
-    #                      win32con.MOUSEEVENTF_MOVE, moveDirection.x, moveDirection.y, 0, 0)
-    # sleepRandom(0.5)
-    # win32api.mouse_event(win32con.MOUSEEVENTF_LEFTUP,
-    #                      0, 0, 0, 0)
-# def mouseMove(x, y):
-#     sleepRandom(1)
-#     centerPos = origin + shiftCenter + randomShift(15)
-#     print(centerPos)
-#     win32api.SetCursorPos([centerPos.x, centerPos.y])  # 鼠标移动到
-#     moveDirection = position(x, y) + randomShift(15)
-#     win32api.mouse_event(win32con.MOUSEEVENTF_LEFTDOWN,
-#                          centerPos.x, centerPos.y, 0, 0)  # 左键按下
-#     sleepRandom(0.5)
-#     # win32api.mouse_event(win32con.MOUSEEVENTF_ABSOLUTE +
-#     #                      win32con.MOUSEEVENTF_MOVE, moveDirection.x, moveDirection.y, 0, 0)
-#     finalPos = centerPos + moveDirection
-#     sleepRandom(0.5)
-#     win32api.mouse_event(win32con.MOUSEEVENTF_LEFTUP,
-#                          finalPos.x, finalPos.y, 0, 0)
 
 
 def reset_window_pos(x, y, reName):
@@ -269,13 +283,14 @@ def scaleXY(x, y):
         return scaleX
 
 
-def dragMap(x, y):
+def dragMap(x, y, isScale):
     sleepRandom(1)
     moveDirection = position(-0.5*x, -0.5*y) + randomShift(50)
     print(moveDirection)
-    scaleNum = scaleXY(moveDirection.x, moveDirection.y)
-    print(scaleNum)
-    moveDirection = 0.5*scaleNum * moveDirection
+    if isScale:
+        scaleNum = scaleXY(moveDirection.x, moveDirection.y)
+        print(scaleNum)
+        moveDirection = 0.5*scaleNum * moveDirection
     print(moveDirection)
     beginPos = mainpageCenter - moveDirection
     finalPos = mainpageCenter + moveDirection
@@ -286,7 +301,6 @@ def dragMap(x, y):
 
 
 def moveMapforJobIcon():
-    time.sleep(4)
     trytime = 3
     isJobIconInEdge = "edge"
     while isJobIconInEdge == "edge" or isJobIconInEdge == "outCenter"\
@@ -305,9 +319,12 @@ def moveMapforJobIcon():
         location = position(location.x, location.y)
         moveDirection = location - mainpageCenter
         if isJobIconInEdge == "outCenter":
-            moveDirection = 0.4*moveDirection
+            isScale = 0
+        else:
+            isScale = 0
+
         print("direction ({},{})".format(moveDirection.x, moveDirection.y))
-        dragMap(moveDirection.x, moveDirection.y)
+        dragMap(moveDirection.x, moveDirection.y, isScale)
 
 
 def posDistance(a, b):
@@ -369,13 +386,14 @@ def isAttack():
     text = reader.readtext('./tmp/isAttack.png')
     print(text)
     print(text[0][1])
-    if re.search(r"(解救)|(保护)", text[0][1]) is not None:
+    if re.search(r"(解救)|(保护)|(击败)", text[0][1]) is not None:
         return 1
     else:
         return 0
 
 
 def Attack():
+    colorPrint("塔塔开！！！", "yellow")
     attackIcon = 'Spacebar'
     smallSkills = 'E'
     maxSkills = 'R'
@@ -389,37 +407,51 @@ def toDoTask():
         Attack()
 
 
-def jobDistanceFromMianPage():
-    splitLine("jobDistanceFromMianPage")
+def jobDistanceFromMainPage():
+    splitLine("jobDistanceFromMainPage")
     jobLoc = checkInfo(const.checkJobReceived)
     im = pyautogui.screenshot(region=(jobLoc.x+15, jobLoc.y+13, 140, 70))
-    im.save('./tmp/jobDistanceFromMianPage.png')
+    im.save('./tmp/jobDistanceFromMainPage.png')
     reader = easyocr.Reader(['ch_sim', 'en'])
-    text = reader.readtext('./tmp/jobDistanceFromMianPage.png')
+    text = reader.readtext('./tmp/jobDistanceFromMainPage.png')
     print(text)
     if text != []:
         print(text[0][1])
         if re.search(r"\d+", text[0][1]) is not None:
             return int(re.search(r"\d+", text[0][1]).group())
         elif re.search(r"已到达任务区域", text[0][1]) is not None:
-            print("get position！")
-            toDoTask()
-            return 0
+            completePrint("Get Position！")
+            return -1
+    reader = easyocr.Reader(['en'])
+    text = reader.readtext('./tmp/jobDistanceFromMainPage.png')
+    print(text)
+    if text != []:
+        print(text[0][1])
+        if re.search(r"\d+", text[0][1]) is not None:
+            return int(re.search(r"\d+", text[0][1]).group())
     print("Ops! recognizeImg failed！")
     return None
 
 
+def waitPageChangeTo(page):
+    while getState() != page:
+        time.sleep(1)
+        print("waitPageChangeTo {}".format(page))
+
+
 def jobDistanceFromJobPage():
     splitLine("jobDistanceFromJobPage")
-    clickShift(shiftJobIcon)
+    openJobPage()
     jobPageJobIconLoc = pyautogui.locateCenterOnScreen(
         jobPageJobIconImg, region=jobPageJobIconRegin, confidence=0.8)
-    wordLoc = jobPageJobIconLoc-wordShiftIconInJobPage
+    jobPageJobIconLoc = position(jobPageJobIconLoc.x, jobPageJobIconLoc.y)
+    wordLoc = jobPageJobIconLoc+wordShiftIconInJobPage
     im = pyautogui.screenshot(region=(wordLoc.x, wordLoc.y, 100, 25))
     im.save('./tmp/jobDistanceFromJobPage.png')
-    reader = easyocr.Reader(['ch_sim', 'en'])
+    reader = easyocr.Reader(['en'])
     text = reader.readtext('./tmp/jobDistanceFromJobPage.png')
     print(text)
+    exitJobPage()
     if text != []:
         print(text[0][1])
         if re.search(r"\d+", text[0][1]) is not None:
@@ -433,7 +465,7 @@ def jobDistance(type):
         exceptAns = 300
     elif type == "Small":
         exceptAns = 10
-    distance = jobDistanceFromMianPage()
+    distance = jobDistanceFromMainPage()
     if distance is None:
         distance = jobDistanceFromJobPage()
     if distance is None:
@@ -442,23 +474,35 @@ def jobDistance(type):
         return distance
 
 
+def checkJobDistance():
+    checkDistance = jobDistanceFromMainPage()
+    checkJobDistance2 = jobDistanceFromJobPage()
+    return max(checkDistance, checkJobDistance2)
+
+
+def go2jobTargetOne():
+    openMap()
+    targetPosition = moveMapforJobIcon()
+    if targetPosition is not None:
+        transportPosition = getNearestTransport(targetPosition)
+        if transportPosition is not None:
+            transPort(transportPosition)
+    else:
+        print("Not find job target in Map")
+    waitPageChangeTo("mainPage")
+
+
 def go2jobTarget():
     jobLoc = checkInfo(const.checkJobReceived)
     distance = jobDistance("Big")
     while jobLoc is not None and distance >= 300:
-        openMap()
-        targetPosition = moveMapforJobIcon()
-        if targetPosition is not None:
-            transportPosition = getNearestTransport(targetPosition)
-            if transportPosition is not None:
-                transPort(transportPosition)
-        else:
-            print("Not find job target in Map")
-        state = "loading"
-        while state != "mainPage":
-            state = getState()
+        go2jobTargetOne()
         jobLoc = checkInfo(const.checkJobReceived)
         distance = jobDistance("Big")
+    if checkJobDistance() < 300:
+        go2jobTargetOne()
+    else:
+        go2jobTarget()
 
 
 def awakeJob():
@@ -466,6 +510,7 @@ def awakeJob():
 
 
 def fineTuningVisualAngle(distance):
+    waitPageChangeTo("mainPage")
     if distance < 200:
         accuracyRank = 4
     else:
@@ -473,7 +518,10 @@ def fineTuningVisualAngle(distance):
     location = pyautogui.locateCenterOnScreen(
         jobFineTuningImg, region=jobFineTuningRegin, confidence=0.8)
     if location is None:
-        print("no location showed?!")
+        location = pyautogui.locateCenterOnScreen(
+            jobFineTuningBigImg, region=jobFineTuningRegin, confidence=0.8)
+    if location is None:
+        errorPrint("mainPage no location showed?!")
         awakeJob()
         return 1
     location = position(location.x, location.y)
@@ -482,7 +530,7 @@ def fineTuningVisualAngle(distance):
     moveDirection = location - mainpageCenter
     if posDistance(location, mainpageCenter) < 2*100*100:
         return 0
-    print("fine tuning direction ({},{})".format(
+    passPrint("fine tuning direction ({},{})".format(
         moveDirection.x, moveDirection.y))
     moveDirection = math.pow(0.5, accuracyRank) * moveDirection
     # print(moveDirection)
@@ -537,6 +585,8 @@ def go2jobTargetDetail():
     print("tuning FINISHED!!")
     while dialogBoxShowed(distance):
         distance = jobDistance("Small")
+        if distance == -1:
+            return -1
         if distance > 50:
             fly(10, 2)
         elif distance > 10:
@@ -548,6 +598,8 @@ def go2jobTargetDetail():
         isNeededTuningAngle = 1
         while isNeededTuningAngle:
             distance = jobDistance("Small")
+            if distance == -1:
+                return -1
             isNeededTuningAngle = fineTuningVisualAngle(distance)
     dialog()
 
@@ -558,9 +610,13 @@ def getState():
         print("state check…………")
         time.sleep(1)
         location = pyautogui.locateCenterOnScreen(
-            decideMianIconImg, region=decideMianIconRegin, confidence=0.8)
+            decideMainIconImg, region=decideMainIconRegin, confidence=0.8)
         if location is not None:
             return "mainPage"
+        location = pyautogui.locateCenterOnScreen(
+            uniqueJobPageImg, region=uniqueJobPageRegin, confidence=0.8)
+        if location is not None:
+            return "jobPage"
         location = pyautogui.locateCenterOnScreen(
             decideMapExitIconImg, region=decideMapExitIconRegin, confidence=0.8)
         if location is not None:
@@ -568,6 +624,7 @@ def getState():
 
 
 def test():
+    back2mainPage()
     # 攻击测试
     # input = [['Spacebar', 1, const.shortPress], ['E', 4, const.longPress]]
     # key_input(input)
@@ -588,9 +645,11 @@ def test():
 
     # # # 检查 - 任务接取完成，地图移动 传送
     go2jobTarget()
-
+    completePrint("Big Move Complete!")
     # 微调视角，移动，对话
     go2jobTargetDetail()
+
+    toDoTask()
 
     # 数字识别
     # jobLoc = checkInfo(const.checkJobReceived)

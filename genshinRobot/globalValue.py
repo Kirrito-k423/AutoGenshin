@@ -20,7 +20,7 @@ shiftJobClassIcon = [position(68, 161),
                      position(68, 483)]
 shiftAccIcon = position(1115, 690)
 
-absoluteAwakeJob = position(184, 351)
+absoluteAwakeJob = position(151, 351)
 absoluteFirstDialogChoice = position(925, 622)
 
 # 相对偏移
@@ -55,9 +55,10 @@ jobFineTuningRegin = (330, 220, 900, 550)  # 1120, 680
 dialogBoxRegin = (800, 400, 200, 200)
 inDialogIconRegin = (890, 350, 100, 300)
 autoDialogRegin = (160, 150, 150, 70)
-decideMianIconRegin = (120, 140, 80, 80)
+decideMainIconRegin = (120, 140, 80, 80)
 decideMapExitIconRegin = (1270, 140, 120, 100)
 jobPageJobIconRegin = (560, 180, 140, 600)
+uniqueJobPageRegin = (120, 750, 100, 100)
 jobMapImg = "./Img/jobMapImg.png"
 jobMapImg2 = "./Img/jobMapImg2.png"
 transportImg = "./Img/transport.png"
@@ -67,9 +68,11 @@ jobFineTuningImg = "./Img/jobFineTuning.png"
 dialogBoxImg = "./Img/dialogBox.png"
 inDialogIcon = "./Img/inDialogIcon.png"
 autoDialogImg = "./Img/autoDialog.png"
-decideMianIconImg = "./Img/decideMianIcon.png"
+decideMainIconImg = "./Img/decideMianIcon.png"
 decideMapExitIconImg = "./Img/decideMapExitIcon.png"
 jobPageJobIconImg = "./Img/jobPageJobIcon.png"
+jobFineTuningBigImg = "./Img/jobFineTuningBig.png"
+uniqueJobPageImg = "./Img/uniqueJobPage.png"
 jobMapTop = 228
 jobMapLeft = 203
 jobMapBottom = 755
