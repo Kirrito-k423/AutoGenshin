@@ -58,6 +58,13 @@ def randomShift(pixel):
 # 输入文字VK_CODE[word]为要输入的文字码
 
 
+def jumpDownFunc():
+    win32api.keybd_event(VK_CODE[jumpDown], 0, 0, 0)  # 按下键
+    win32api.keybd_event(
+        VK_CODE[jumpDown], 0, win32con.KEYEVENTF_KEYUP, 0)  # 松开按键
+    sleepRandom(0.3)
+
+
 def fly(times, interval, direction):
     while times:
         win32api.keybd_event(VK_CODE[direction], 0, 0, 0)  # 按下键
@@ -209,7 +216,7 @@ def checkPicExists(Img, region, confidence):
 
 def checkInfo(type):
     if type == const.checkJobReceived:
-        return checkPicExists(checkJobReceivedImg, checkJobReceivedRegion, 0.7)
+        return checkPicExists(checkJobReceivedImg, checkJobReceivedRegion, 0.6)
 
 
 def jobMapEdgeRegion(part):
@@ -386,13 +393,17 @@ def transPort(transportPosition):
 
 
 def isAttack():
-    jobLoc = checkInfo(const.checkJobReceived)
+    splitLine("isAttack")
+    jobLoc = None
+    while jobLoc is None:
+        jobLoc = checkInfo(const.checkJobReceived)
+        awakeJob()
     im = pyautogui.screenshot(region=(jobLoc.x+15, jobLoc.y-13, 140, 26))
     im.save('./tmp/isAttack.png')
     reader = easyocr.Reader(['ch_sim', 'en'])
     text = reader.readtext('./tmp/isAttack.png')
     print(text)
-    print(text[0][1])
+    passPrint(text[0][1])
     if re.search(r"(解救)|(保护)|(击败)", text[0][1]) is not None:
         return 1
     else:
@@ -426,12 +437,38 @@ def Attack(num):
     fly(1, 1, forward)
 
 
+def isFindSomeNearDialog():
+    splitLine("isFindSomeNearDialog")
+    jobLoc = None
+    while jobLoc is None:
+        jobLoc = checkInfo(const.checkJobReceived)
+        awakeJob()
+    im = pyautogui.screenshot(region=(jobLoc.x+15, jobLoc.y-13, 140, 26))
+    im.save('./tmp/isFindSomeNearDialog.png')
+    reader = easyocr.Reader(['ch_sim', 'en'])
+    text = reader.readtext('./tmp/isFindSomeNearDialog.png')
+    print(text)
+    passPrint(text[0][1])
+    if re.search(r"(对话)|(寻找)", text[0][1]) is not None:
+        return 1
+    else:
+        return 0
+
+
+def findSomeNear():
+    while dialogBoxShowed():
+        fly(1, 1, forward)
+    dialog()
+
+
 def toDoTask():
     while isAttack():
         trytime = 3
         while trytime > 0:
             Attack(trytime)
             trytime -= 1
+    while isFindSomeNearDialog():
+        findSomeNear()
 
 
 def jobDistanceFromMainPage():
@@ -443,20 +480,21 @@ def jobDistanceFromMainPage():
     text = reader.readtext('./tmp/jobDistanceFromMainPage.png')
     print(text)
     if text != []:
-        print(text[0][1])
+        passPrint(text[0][1])
         if re.search(r"\d+", text[0][1]) is not None:
             return int(re.search(r"\d+", text[0][1]).group())
         elif re.search(r"(到达)|(区域)", text[0][1]) is not None:
             completePrint("Get Position！")
             return -1
     reader = easyocr.Reader(['en'])
-    text = reader.readtext('./tmp/jobDistanceFromMainPage.png')
+    text = reader.readtext(
+        './tmp/jobDistanceFromMainPage.png')
     print(text)
     if text != []:
-        print(text[0][1])
+        passPrint(text[0][1])
         if re.search(r"\d+", text[0][1]) is not None:
             return int(re.search(r"\d+", text[0][1]).group())
-    print("Ops! recognizeImg failed！")
+    errorPrint("Ops! recognizeImg failed！")
     return None
 
 
@@ -476,18 +514,20 @@ def jobDistanceFromJobPage():
     im = pyautogui.screenshot(region=(wordLoc.x, wordLoc.y, 100, 25))
     im.save('./tmp/jobDistanceFromJobPage.png')
     reader = easyocr.Reader(['en'])
-    text = reader.readtext('./tmp/jobDistanceFromJobPage.png')
+    text = reader.readtext(
+        './tmp/jobDistanceFromJobPage.png')
     print(text)
     exitJobPage()
     if text != []:
-        print(text[0][1])
+        passPrint(text[0][1])
         if re.search(r"\d+", text[0][1]) is not None:
             return int(re.search(r"\d+", text[0][1]).group())
-    print("Ops!Ops! recognizeImg failed！")
+    errorPrint("Ops!Ops! recognizeImg failed！")
     return None
 
 
 def jobDistance(type):
+    fly(1, 1, forward)
     if type == "Big":
         exceptAns = 300
     elif type == "Small":
@@ -502,8 +542,13 @@ def jobDistance(type):
 
 
 def checkJobDistance():
+    fly(1, 1, forward)
     checkDistance = jobDistanceFromMainPage()
     checkJobDistance2 = jobDistanceFromJobPage()
+    if checkJobDistance2 is None:
+        checkJobDistance2 = 0
+    if checkDistance is None:
+        checkDistance = 0
     return max(checkDistance, checkJobDistance2)
 
 
@@ -521,7 +566,6 @@ def go2jobTargetOne():
 
 def go2jobTarget(maxtime):
     splitLine("go2jobTarget")
-    go2jobTargetOne()
     distance = checkJobDistance()
     if maxtime == 0:
         return 0
@@ -530,19 +574,21 @@ def go2jobTarget(maxtime):
     elif distance < 300:
         return 0
     else:
+        go2jobTargetOne()
         go2jobTarget(maxtime-1)
 
 
 def awakeJob():
+    splitLine("awakeJob")
     clickAbsolute(absoluteAwakeJob)
 
 
 def fineTuningVisualAngle(distance):
     waitPageChangeTo("mainPage")
-    if distance < 200:
+    if distance < 50:
         accuracyRank = 4
     else:
-        accuracyRank = 3
+        accuracyRank = 4
     location = pyautogui.locateCenterOnScreen(
         jobFineTuningImg, region=jobFineTuningRegin, confidence=0.8)
     if location is None:
@@ -551,12 +597,15 @@ def fineTuningVisualAngle(distance):
     if location is None:
         errorPrint("mainPage no location showed?!")
         awakeJob()
-        return 1
+        if jobDistance() == -1:
+            return -1
+        else:
+            return 1
     location = position(location.x, location.y)
-    if location.y > 650 or location.y < 270:
+    if location.y > 650 or location.y < 270 or (location.x > 690 and location.x < 940):
         accuracyRank = 2
     moveDirection = location - mainpageCenter
-    if posDistance(location, mainpageCenter) < 2*100*100:
+    if posDistance(location, mainpageCenter) < 3*100*100:
         return 0
     passPrint("fine tuning direction ({},{})".format(
         moveDirection.x, moveDirection.y))
@@ -571,9 +620,12 @@ def fineTuningVisualAngle(distance):
     return 1
 
 
-def dialogBoxShowed(distance):
-    if distance > 5:
+def dialogBoxShowed(distance=-1):
+    if distance > 3:
         return 1
+    elif distance != -1:
+        if checkJobDistance() > 3:
+            return 1
     location = pyautogui.locateCenterOnScreen(
         dialogBoxImg, region=dialogBoxRegin, confidence=0.8)
     if location is not None:
@@ -588,21 +640,25 @@ def dialog():
     time.sleep(2)
     notFinished = 1
     while notFinished:
-        time.sleep(1.5)
-        autoDialogLoc = pyautogui.locateCenterOnScreen(
-            autoDialogImg, region=autoDialogRegin, confidence=0.8)
+        sleepRandom(0.5)
         choiceLoc = pyautogui.locateCenterOnScreen(
             inDialogIcon, region=inDialogIconRegin, confidence=0.8)
-        dialogBoxLoc = pyautogui.locateCenterOnScreen(
-            dialogBoxImg, region=dialogBoxRegin, confidence=0.8)
-        if autoDialogLoc is None and choiceLoc is None\
-                and dialogBoxLoc is None:
+        # dialogBoxLoc = pyautogui.locateCenterOnScreen(
+        #     dialogBoxImg, region=dialogBoxRegin, confidence=0.8)
+        quickClickAbsolute(shiftCenter)
+        if getState() == "mainPage":
             notFinished = 0
             break
         if choiceLoc is not None:
-            clickAbsolute(position(choiceLoc.x, choiceLoc.y))
-        clickAbsolute(absoluteFirstDialogChoice)
-    print("Dialog FINISHED!!!")
+            quickClickAbsolute(position(choiceLoc.x, choiceLoc.y))
+        quickClickAbsolute(absoluteFirstDialogChoice)
+    completePrint("Dialog FINISHED!!!")
+
+
+def goBack():
+    jumpDownFunc()
+    fly(3, 2, backward)
+    fly(3, 3, right)
 
 
 def go2jobTargetDetail():
@@ -613,23 +669,31 @@ def go2jobTargetDetail():
     while isNeededTuningAngle:
         isNeededTuningAngle = fineTuningVisualAngle(distance)
     print("tuning FINISHED!!")
+    stuckCount = 0
     while dialogBoxShowed(distance):
+        stuckCount += 1
+        if stuckCount == 8:
+            goBack()
+            stuckCount = 0
+            continue
         distance = jobDistance("Small")
+        jumpDownFunc()
+        fly(1, 1, left)
         if distance == -1:
             return -1
-        if distance > 50:
+        if distance > 100:
             fly(10, 2, forward)
+        elif distance > 30:
+            fly(6, 2, forward)
         elif distance > 10:
-            fly(1, 3, forward)
+            fly(3, 2, forward)
         else:
-            input = [['Control', 1, const.shortPress], [
-                'W', 1, const.longPress]]  # Control ——jump
-            key_input(input)
+            fly(1, 1, forward)
+            # input = [['Control', 1, const.shortPress], [
+            #     'W', 1, const.longPress]]  # Control ——jump
+            # key_input(input)
         isNeededTuningAngle = 1
-        while isNeededTuningAngle:
-            distance = jobDistance("Small")
-            if distance == -1:
-                return -1
+        while isNeededTuningAngle == 1:
             isNeededTuningAngle = fineTuningVisualAngle(distance)
     dialog()
 
@@ -647,6 +711,10 @@ def getState():
             uniqueJobPageImg, region=uniqueJobPageRegin, confidence=0.8)
         if location is not None:
             return "jobPage"
+        autoDialogLoc = pyautogui.locateCenterOnScreen(
+            autoDialogImg, region=autoDialogRegin, confidence=0.8)
+        if autoDialogLoc is not None:
+            return "dialog"
         location = pyautogui.locateCenterOnScreen(
             decideMapExitIconImg, region=decideMapExitIconRegin, confidence=0.8)
         if location is not None:
@@ -671,10 +739,10 @@ def test():
     #     receiveJob(const.worldJob)
 
     # # # 检查 - 任务接取完成，地图移动 传送
-    go2jobTarget(1)
-    completePrint("Big Move Complete!")
-    # 微调视角，移动，对话
-    go2jobTargetDetail()
+    # go2jobTarget(1)
+    # completePrint("Big Move Complete!")
+    # # 微调视角，移动，对话
+    # go2jobTargetDetail()
 
     toDoTask()
 

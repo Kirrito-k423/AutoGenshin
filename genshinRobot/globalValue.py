@@ -16,8 +16,10 @@ smallSkills = 'E'
 maxSkills = 'R'
 forward = 'W'
 backward = 'S'
+right = 'D'
+left = 'A'
 jump = 'Control'
-
+jumpDown = attackIcon
 # 位置
 shiftMap = position(144, 130)
 shiftCenter = position(690, 245)
