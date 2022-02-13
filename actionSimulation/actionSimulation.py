@@ -19,9 +19,13 @@ def back2mainPage():
 
 
 def receiveJob(jobID):
-    clickShift(shiftJobIcon)
+    openJobPage()
     clickShift(shiftJobClassIcon[jobID])
-    clickShift(shiftAccIcon)
+    if checkJobReceivedFromJobPage() == True:
+        keyExit()
+    else:
+        clickShift(shiftAccIcon)
+    waitPageChangeTo("mainPage")
 
 
 def go2jobTargetOne():
@@ -76,6 +80,7 @@ def test():
             go2jobTargetDetail()
             # 具体任务
             toDoTask()
+        time.sleep(2)
 
     # 攻击测试
         # simpleAttackTest()

@@ -164,6 +164,15 @@ def getNearestTransport(targetPosition):
         if(posDistance(transportlocation, targetPosition) < posDistance(ans, targetPosition)):
             ans = transportlocation
             print(ans)
+    for i in pyautogui.locateAllOnScreen(
+            sevenStatueImg, region=centerRegion, confidence=0.9):
+        x = i[0]+0.5*i[2]
+        y = i[1]+0.5*i[3]
+        sevenStatueLocation = position(x, y)
+        print(sevenStatueLocation)
+        if(posDistance(sevenStatueLocation, targetPosition) < posDistance(ans, targetPosition)):
+            ans = sevenStatueLocation
+            print(ans)
     if ans == 2*quarterMainPageHeight:
         return None
     else:

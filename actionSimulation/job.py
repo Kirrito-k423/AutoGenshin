@@ -123,8 +123,15 @@ def checkJobDistance():
 
 def checkJobType():
     jobType = None
-    if checkPicExists(checkJobReceivedImg, checkJobReceivedRegion, 0.6) is not None:
+    if checkPicExists(checkJobReceivedImg, checkJobReceivedRegion, 0.7) is not None:
         jobType = globalJob.changeType("blueDiamond")
-    if checkPicExists(checkJobReceivedGoldDiamondImg, checkJobReceivedRegion, 0.6) is not None:
+    if checkPicExists(checkJobReceivedGoldDiamondImg, checkJobReceivedRegion, 0.7) is not None:
         jobType = globalJob.changeType("goldDiamond")
     return yellowPrint(jobType)
+
+
+def checkJobReceivedFromJobPage():
+    if checkPicExists(chaseImg, chaseRegin, 0.6) is not None:
+        return globalJob.isReceivedChange(True)
+    if checkPicExists(stopChaseImg, chaseRegin, 0.6) is not None:
+        return globalJob.isReceivedChange(False)

@@ -5,13 +5,20 @@ import re
 
 class job:
     type = ""
+    isReceived = False
 
     def __init__(self, type):
         self.type = type
 
     def changeType(self, type):
         self.type = type
+        if type != "None":
+            self.isReceived = True
         return type
+
+    def isReceivedChange(self, bool2change):
+        self.isReceived = bool2change
+        return bool2change
 
 
 class actionSimulationState:

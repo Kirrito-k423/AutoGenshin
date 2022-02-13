@@ -129,7 +129,9 @@ def moveDependsDistance():
         else:
             jumpDownFunc()
             fly(1, 1, left)
-            if distance > 100:
+            if distance > 200:
+                fly(20, 3, forward)
+            elif distance > 100:
                 fly(10, 2, forward)
             elif distance > 30:
                 fly(6, 2, forward)
