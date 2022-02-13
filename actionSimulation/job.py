@@ -16,7 +16,7 @@ def fixEasyOCRNumberResult(string):
 
 def jobDistanceFromMainPage():
     splitLine("jobDistanceFromMainPage")
-    jobLoc = checkInfo(const.checkJobReceived)
+    jobLoc = position(150, 351)
     im = pyautogui.screenshot(region=(jobLoc.x+15, jobLoc.y+13, 140, 70))
     im.save('./tmp/jobDistanceFromMainPage.png')
     reader = easyocr.Reader(['ch_sim', 'en'])
@@ -46,11 +46,20 @@ def jobDistanceFromMainPage():
     return None
 
 
+def findJobPageJobIconLoc():
+    yellowPrint(globalJob.type)
+    if globalJob.type == 'blueDiamond':
+        return pyautogui.locateCenterOnScreen(
+            jobPageJobIconImg, region=jobPageJobIconRegin, confidence=0.8)
+    elif globalJob.type == 'goldDiamond':
+        return pyautogui.locateCenterOnScreen(
+            jobPageJobIconGoldImg, region=jobPageJobIconRegin, confidence=0.8)
+
+
 def jobDistanceFromJobPage():
     splitLine("jobDistanceFromJobPage")
     openJobPage()
-    jobPageJobIconLoc = pyautogui.locateCenterOnScreen(
-        jobPageJobIconImg, region=jobPageJobIconRegin, confidence=0.8)
+    jobPageJobIconLoc = findJobPageJobIconLoc()
     jobPageJobIconLoc = position(jobPageJobIconLoc.x, jobPageJobIconLoc.y)
     wordLoc = jobPageJobIconLoc+wordShiftIconInJobPage
     im = pyautogui.screenshot(region=(wordLoc.x, wordLoc.y, 100, 25))
@@ -85,37 +94,20 @@ def jobDistance(type="Small"):
         return distance
 
 
-def fineTuningVisualAngle(distance):
-    isNeededTuningAngle = 1
-    while isNeededTuningAngle == 1:
-        waitPageChangeTo("mainPage")
-        if distance < 50:
-            accuracyRank = 4
-        else:
-            accuracyRank = 4
+def findJobFineTuningImg():
+    if globalJob.type == "blueDiamond":
         location = pyautogui.locateCenterOnScreen(
             jobFineTuningImg, region=jobFineTuningRegin, confidence=0.8)
         if location is None:
             location = pyautogui.locateCenterOnScreen(
                 jobFineTuningBigImg, region=jobFineTuningRegin, confidence=0.8)
+    elif globalJob.type == "goldDiamond":
+        location = pyautogui.locateCenterOnScreen(
+            jobFineTuningGlodImg, region=jobFineTuningRegin, confidence=0.8)
         if location is None:
-            errorPrint("mainPage no location showed?!")
-            awakeJob()
-            if jobDistance("Small") == -1:
-                isNeededTuningAngle = -1
-            break
-        location = position(location.x, location.y)
-        if location.y > 650 or location.y < 270 or (location.x > 690 and location.x < 940):
-            accuracyRank = 2
-        moveDirection = location - mainpageCenter
-        if posDistance(location, mainpageCenter) < 3*100*100:
-            isNeededTuningAngle = 0
-            break
-        passPrint("fine tuning direction ({},{})".format(
-            moveDirection.x, moveDirection.y))
-        moveDirection = math.pow(0.5, accuracyRank) * moveDirection
-        moveScreen(moveDirection)
-    return isNeededTuningAngle
+            location = pyautogui.locateCenterOnScreen(
+                jobFineTuningBigGlodImg, region=jobFineTuningRegin, confidence=0.8)
+    return location
 
 
 def checkJobDistance():
@@ -127,3 +119,12 @@ def checkJobDistance():
     if checkDistance is None:
         checkDistance = 0
     return max(checkDistance, checkJobDistance2)
+
+
+def checkJobType():
+    jobType = None
+    if checkPicExists(checkJobReceivedImg, checkJobReceivedRegion, 0.6) is not None:
+        jobType = globalJob.changeType("blueDiamond")
+    if checkPicExists(checkJobReceivedGoldDiamondImg, checkJobReceivedRegion, 0.6) is not None:
+        jobType = globalJob.changeType("goldDiamond")
+    return yellowPrint(jobType)

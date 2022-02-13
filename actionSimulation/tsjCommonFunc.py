@@ -8,27 +8,38 @@ import plotille
 def errorPrint(message):
     os.system('color')
     print(colored(message, 'red'))
+    return message
 
 
 def colorPrint(message, color):
     os.system('color')
     print(colored(message, color))
+    return message
+
+
+def yellowPrint(message):
+    os.system('color')
+    print(colored(message, "yellow"))
+    return message
 
 
 def passPrint(message):
     os.system('color')
     print(colored(message, 'green'))
+    return message
 
 
 def completePrint(message):
     os.system('color')
     print("--------------------------------{}--------------------------------".format(colored(message, 'green')))
+    return message
 
 
 def splitLine(string):
     print("\n")
     print("--------------------------------{}--------------------------------".format(string))
     print("\n")
+    return string
 
 
 def histogramsPrint(data, type="vertical"):

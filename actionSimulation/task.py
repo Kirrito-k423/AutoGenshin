@@ -4,9 +4,9 @@ from job import *
 
 def isAttack():
     splitLine("isAttack")
-    jobLoc = None
-    while jobLoc is None:
-        jobLoc = checkInfo(const.checkJobReceived)
+    haveJob = None
+    while haveJob is None:
+        haveJob = checkJobType()
         awakeJob()
     im = pyautogui.screenshot(region=(jobLoc.x+15, jobLoc.y-13, 140, 26))
     im.save('./tmp/isAttack.png')
@@ -48,9 +48,9 @@ def Attack(num):
 
 def isFindSomeNearDialog():
     splitLine("isFindSomeNearDialog")
-    jobLoc = None
-    while jobLoc is None:
-        jobLoc = checkInfo(const.checkJobReceived)
+    haveJob = None
+    while haveJob is None:
+        haveJob = checkJobType()
         awakeJob()
     im = pyautogui.screenshot(region=(jobLoc.x+15, jobLoc.y-13, 140, 26))
     im.save('./tmp/isFindSomeNearDialog.png')
@@ -157,3 +157,43 @@ def goBack2Task():
         if fineTuningVisualAngle(distance) == -1:
             completePrint("It's Task Time!")
             return -1
+
+
+def isBreakinDialog():
+    if getState() == "dialog":
+        dialog()
+        return 1
+    return 0
+
+
+def fineTuningVisualAngle(distance):
+    isNeededTuningAngle = 1
+    while isNeededTuningAngle == 1:
+        if isBreakinDialog():
+            isNeededTuningAngle = -1
+            break
+        waitPageChangeTo("mainPage")
+        if distance < 50:
+            accuracyRank = 4
+        else:
+            accuracyRank = 4
+        location = findJobFineTuningImg()
+
+        if location is None:
+            errorPrint("mainPage no location showed?!")
+            awakeJob()
+            if jobDistance("Small") == -1:
+                isNeededTuningAngle = -1
+            break
+        location = position(location.x, location.y)
+        if location.y > 650 or location.y < 270 or (location.x > 690 and location.x < 940):
+            accuracyRank = 2
+        moveDirection = location - mainpageCenter
+        if posDistance(location, mainpageCenter) < 3*100*100:
+            isNeededTuningAngle = 0
+            break
+        passPrint("fine tuning direction ({},{})".format(
+            moveDirection.x, moveDirection.y))
+        moveDirection = math.pow(0.5, accuracyRank) * moveDirection
+        moveScreen(moveDirection)
+    return isNeededTuningAngle

@@ -19,11 +19,6 @@ def exitJobPage():
     waitPageChangeTo("mainPage")
 
 
-def checkInfo(type):
-    if type == const.checkJobReceived:
-        return checkPicExists(checkJobReceivedImg, checkJobReceivedRegion, 0.6)
-
-
 def checkPicExists(Img, region, confidence):
     # ,region 4-integer tuple of (left, top, width, height))
     location = pyautogui.locateCenterOnScreen(

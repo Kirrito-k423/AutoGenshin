@@ -33,12 +33,29 @@ def jobMapEdgeRegion(part):
         return realCenterRegion
 
 
+def checkJobMapKind2(direction):
+    if globalJob.type == "blueDiamond":
+        return checkPicExists(
+            jobMapImg2, jobMapEdgeRegion(direction), 0.8)
+    elif globalJob.type == "goldDiamond":
+        return checkPicExists(
+            jobMapGoldImg2, jobMapEdgeRegion(direction), 0.8)
+
+
+def checkJobMapKind(direction):
+    if globalJob.type == "blueDiamond":
+        return checkPicExists(
+            jobMapImg, jobMapEdgeRegion(direction), 0.8)
+    elif globalJob.type == "goldDiamond":
+        return checkPicExists(
+            jobMapGoldImg, jobMapEdgeRegion(direction), 0.8)
+
+
 def checkJobIconMapPosition(direction):
     if direction == "center" or direction == "realCenter":
-        location = checkPicExists(
-            jobMapImg2, jobMapEdgeRegion(direction), 0.8)
+        location = checkJobMapKind2(direction)
     else:
-        location = checkPicExists(jobMapImg, jobMapEdgeRegion(direction), 0.9)
+        location = checkJobMapKind(direction)
     if location is not None:
         print("jobIcon is in {} ({},{})".format(
             direction, location.x, location.y))

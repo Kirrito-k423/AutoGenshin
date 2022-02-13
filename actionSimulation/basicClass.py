@@ -3,7 +3,19 @@ import inspect
 import re
 
 
+class job:
+    type = ""
+
+    def __init__(self, type):
+        self.type = type
+
+    def changeType(self, type):
+        self.type = type
+        return type
+
+
 class actionSimulationState:
+    jobType = None
     power = 0
     remainedDailyTask = 4
     state = 0

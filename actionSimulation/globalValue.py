@@ -1,8 +1,8 @@
 
-from basicClass import position, const
+from basicClass import position, const, job
 
 regexName = "模拟器1"
-
+globalJob = job("None")
 # 夜神坐标
 origin = position(100, 100)
 topBarHeight = position(0, 32)
@@ -47,6 +47,7 @@ wordShiftIconInJobPage = position(-380, 0)
 # const
 const.longPress = 2333
 const.shortPress = 'yahaha'
+const.mainJob = 4
 const.worldJob = 4
 const.checkJobReceived = 1
 # code https://blog.csdn.net/chang1976272446/article/details/103761029
@@ -69,11 +70,13 @@ easyOCRFix = {'O': '0', 'o': '0',
               'S': '5',
               'G': '6',
               'T': '7',
-              'g': '9'}
+              'g': '9',
+              'e': '12'}
 
 # imgPath
 checkJobReceivedImg = "./Img/checkJobReceivedImg.png"
 checkJobReceivedRegion = (130, 330, 36, 36)
+checkJobReceivedGoldDiamondImg = "./Img/CheckJobReceivedGoldDiamond.png"
 centerRegion = (101, 132, 1280, 720)
 realCenterRegion = (540, 350, 530, 260)
 transportAccRegion = (1137, 772, 130, 100)
@@ -88,18 +91,23 @@ jobPageJobIconRegin = (560, 180, 140, 600)
 uniqueJobPageRegin = (120, 750, 100, 100)
 dialogXRegin = (1292, 150, 80, 80)
 jobMapImg = "./Img/jobMapImg.png"
+jobMapGoldImg = "./Img/jobMapImgGold.png"
 jobMapImg2 = "./Img/jobMapImg2.png"
+jobMapGoldImg2 = "./Img/jobMapImg2Gold.png"
 transportImg = "./Img/transport.png"
 transportAccImg = "./Img/transportAcc.png"
 transportTextImg = "./Img/transportText.png"
 jobFineTuningImg = "./Img/jobFineTuning.png"
+jobFineTuningGlodImg = "./Img/jobFineTuningGlod.png"
 dialogBoxImg = "./Img/dialogBox.png"
 inDialogIcon = "./Img/inDialogIcon.png"
 autoDialogImg = "./Img/autoDialog.png"
 decideMainIconImg = "./Img/decideMianIcon.png"
 decideMapExitIconImg = "./Img/decideMapExitIcon.png"
 jobPageJobIconImg = "./Img/jobPageJobIcon.png"
+jobPageJobIconGoldImg = "./Img/jobPageJobIconGold.png"
 jobFineTuningBigImg = "./Img/jobFineTuningBig.png"
+jobFineTuningBigGlodImg = "./Img/jobFineTuningBigGlod.png"
 uniqueJobPageImg = "./Img/uniqueJobPage.png"
 dialogXImg = "./Img/dialogX.png"
 jobMapTop = 228
