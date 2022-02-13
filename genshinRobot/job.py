@@ -103,7 +103,7 @@ def fineTuningVisualAngle(distance):
             awakeJob()
             if jobDistance("Small") == -1:
                 isNeededTuningAngle = -1
-                break
+            break
         location = position(location.x, location.y)
         if location.y > 650 or location.y < 270 or (location.x > 690 and location.x < 940):
             accuracyRank = 2

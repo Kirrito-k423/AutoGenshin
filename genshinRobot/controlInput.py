@@ -39,7 +39,6 @@ def reset_window_pos(x, y, reName):
 
 
 def keyExit():
-    time.sleep(2)
     input = [['Esc', 1, const.shortPress]]
     key_input(input)
 

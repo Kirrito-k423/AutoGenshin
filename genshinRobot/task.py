@@ -155,4 +155,6 @@ def goBack2Task():
         # input = [['Control', 1, const.shortPress], [
         #     'W', 1, const.longPress]]  # Control ——jump
         # key_input(input)
-        fineTuningVisualAngle(distance)
+        if fineTuningVisualAngle(distance) == -1:
+            completePrint("It's Task Time!")
+            return -1

@@ -64,10 +64,12 @@ VK_CODE = {'Esc': 27,
            }
 easyOCRFix = {'O': '0', 'o': '0',
               'l': '1', 'I': '1',
+              'D': '2',
               'B': '3',
               'S': '5',
               'G': '6',
-              'T': '7', }
+              'T': '7',
+              'g': '9'}
 
 # imgPath
 checkJobReceivedImg = "./Img/checkJobReceivedImg.png"
