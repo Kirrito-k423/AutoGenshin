@@ -50,44 +50,7 @@ def go2jobTarget(maxtime):
 
 
 def go2jobTargetDetail():
-    distance = jobDistance("Small")
-    if distance == -1:
-        return -1
-    isNeededTuningAngle = 1
-    while isNeededTuningAngle:
-        isNeededTuningAngle = fineTuningVisualAngle(distance)
-    print("tuning FINISHED!!")
-    stuckCount = 0
-    while dialogBoxShowed(distance):
-        stuckCount += 1
-        if stuckCount == 8:
-            goBack()
-            stuckCount = 0
-            continue
-        distance = jobDistance("Small")
-
-        if distance == -1:
-            return -1
-        else:
-            if distance < 10:
-                fly(1, 1, forward)
-            else:
-                jumpDownFunc()
-                fly(1, 1, left)
-                if distance > 100:
-                    fly(10, 2, forward)
-                elif distance > 30:
-                    fly(6, 2, forward)
-                elif distance > 10:
-                    fly(3, 2, forward)
-
-            # input = [['Control', 1, const.shortPress], [
-            #     'W', 1, const.longPress]]  # Control ——jump
-            # key_input(input)
-        isNeededTuningAngle = 1
-        while isNeededTuningAngle == 1:
-            isNeededTuningAngle = fineTuningVisualAngle(distance)
-    dialog()
+    goBack2Task()
 
 
 def simpleAttackTest():

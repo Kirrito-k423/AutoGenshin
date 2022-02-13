@@ -1,6 +1,5 @@
 
 from job import *
-import math
 
 
 def isAttack():
@@ -69,11 +68,11 @@ def isFindSomeNearDialog():
 def findSomeNear():
     while dialogBoxShowed():
         fly(1, 1, forward)
-    dialog()
 
 
 def toDoTask():
     while isAttack():
+        goBack2Task()
         trytime = 3
         while trytime > 0:
             Attack(trytime)
@@ -105,43 +104,6 @@ def dialog():
     completePrint("Dialog FINISHED!!!")
 
 
-def fineTuningVisualAngle(distance):
-    waitPageChangeTo("mainPage")
-    if distance < 50:
-        accuracyRank = 4
-    else:
-        accuracyRank = 4
-    location = pyautogui.locateCenterOnScreen(
-        jobFineTuningImg, region=jobFineTuningRegin, confidence=0.8)
-    if location is None:
-        location = pyautogui.locateCenterOnScreen(
-            jobFineTuningBigImg, region=jobFineTuningRegin, confidence=0.8)
-    if location is None:
-        errorPrint("mainPage no location showed?!")
-        awakeJob()
-        if jobDistance("Small") == -1:
-            return -1
-        else:
-            return 1
-    location = position(location.x, location.y)
-    if location.y > 650 or location.y < 270 or (location.x > 690 and location.x < 940):
-        accuracyRank = 2
-    moveDirection = location - mainpageCenter
-    if posDistance(location, mainpageCenter) < 3*100*100:
-        return 0
-    passPrint("fine tuning direction ({},{})".format(
-        moveDirection.x, moveDirection.y))
-    moveDirection = math.pow(0.5, accuracyRank) * moveDirection
-    # print(moveDirection)
-    beginPos = mainpageCenter - moveDirection
-    finalPos = mainpageCenter + moveDirection
-    # 800,900表示鼠标拖拽的起始位置，0.2设置鼠标移动快慢
-    pyautogui.moveTo(beginPos.x, beginPos.y, 0.2)
-    # 200,200表示鼠标拖拽的终点位置，0.2设置鼠标拖拽的快慢，“easeOutQuad”表示鼠标拖动先快后慢（多种拖拽方式可选）
-    pyautogui.dragTo(finalPos.x, finalPos.y, 2, pyautogui.easeOutQuad)
-    return 1
-
-
 def dialogBoxShowed(distance=-1):
     if distance > 3:
         return 1
@@ -151,7 +113,46 @@ def dialogBoxShowed(distance=-1):
     location = pyautogui.locateCenterOnScreen(
         dialogBoxImg, region=dialogBoxRegin, confidence=0.8)
     if location is not None:
-        clickAbsolute(position(location.x, location.y))
+        quickClickAbsolute(position(location.x, location.y))
+        dialog()
         return 0
     else:
         return 1
+
+
+def moveDependsDistance():
+    distance = jobDistance("Small")
+    if distance == -1:
+        return -1
+    else:
+        if distance < 10:
+            fly(1, 1, forward)
+        else:
+            jumpDownFunc()
+            fly(1, 1, left)
+            if distance > 100:
+                fly(10, 2, forward)
+            elif distance > 30:
+                fly(6, 2, forward)
+            elif distance > 10:
+                fly(3, 2, forward)
+
+
+def goBack2Task():
+    distance = jobDistance("Small")
+    if distance == -1:
+        return -1
+    fineTuningVisualAngle(distance)
+    print("tuning FINISHED!!")
+    stuckCount = 0
+    while dialogBoxShowed(distance):
+        stuckCount += 1
+        if stuckCount == 8:
+            goBack()
+            stuckCount = 0
+            continue
+        moveDependsDistance()
+        # input = [['Control', 1, const.shortPress], [
+        #     'W', 1, const.longPress]]  # Control ——jump
+        # key_input(input)
+        fineTuningVisualAngle(distance)

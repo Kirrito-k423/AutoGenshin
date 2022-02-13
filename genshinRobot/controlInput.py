@@ -1,10 +1,11 @@
+from pydoc import cli
 import time
 from globalValue import *
 import random
 import win32api
 import win32con
 import win32gui
-import win32com
+import win32com.client
 import re
 from tsjCommonFunc import *
 import pyautogui
@@ -57,6 +58,7 @@ def jumpDownFunc():
 
 
 def fly(times, interval, direction):
+    colorPrint("fly {}".format(times), "yellow")
     while times:
         win32api.keybd_event(VK_CODE[direction], 0, 0, 0)  # 按下键
         win32api.keybd_event(VK_CODE[jump], 0, 0, 0)  # 按下键

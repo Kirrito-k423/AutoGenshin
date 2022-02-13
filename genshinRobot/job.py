@@ -1,6 +1,7 @@
 from atomAction import *
 import easyocr
 import re
+import math
 
 
 def fixEasyOCRNumberResult(string):
@@ -31,7 +32,6 @@ def jobDistanceFromMainPage():
             colorPrint(text, 'magenta')
             if re.search(r"\d+", text) is not None:
                 return int(re.search(r"\d+", text).group())
-
     reader = easyocr.Reader(['en'])
     text = reader.readtext(
         './tmp/jobDistanceFromMainPage.png')
@@ -70,7 +70,7 @@ def jobDistanceFromJobPage():
     return None
 
 
-def jobDistance(type):
+def jobDistance(type="Small"):
     # fly(1, 1, forward) 由于有手动修正，准确率不需要通过变位置来提高了
     if type == "Big":
         exceptAns = 300
@@ -83,6 +83,39 @@ def jobDistance(type):
         return exceptAns
     else:
         return distance
+
+
+def fineTuningVisualAngle(distance):
+    isNeededTuningAngle = 1
+    while isNeededTuningAngle == 1:
+        waitPageChangeTo("mainPage")
+        if distance < 50:
+            accuracyRank = 4
+        else:
+            accuracyRank = 4
+        location = pyautogui.locateCenterOnScreen(
+            jobFineTuningImg, region=jobFineTuningRegin, confidence=0.8)
+        if location is None:
+            location = pyautogui.locateCenterOnScreen(
+                jobFineTuningBigImg, region=jobFineTuningRegin, confidence=0.8)
+        if location is None:
+            errorPrint("mainPage no location showed?!")
+            awakeJob()
+            if jobDistance("Small") == -1:
+                isNeededTuningAngle = -1
+                break
+        location = position(location.x, location.y)
+        if location.y > 650 or location.y < 270 or (location.x > 690 and location.x < 940):
+            accuracyRank = 2
+        moveDirection = location - mainpageCenter
+        if posDistance(location, mainpageCenter) < 3*100*100:
+            isNeededTuningAngle = 0
+            break
+        passPrint("fine tuning direction ({},{})".format(
+            moveDirection.x, moveDirection.y))
+        moveDirection = math.pow(0.5, accuracyRank) * moveDirection
+        moveScreen(moveDirection)
+    return isNeededTuningAngle
 
 
 def checkJobDistance():
