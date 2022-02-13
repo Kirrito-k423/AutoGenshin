@@ -319,11 +319,19 @@ def dragMap(x, y, isScale):
     pyautogui.dragTo(finalPos.x, finalPos.y, 2, pyautogui.easeOutQuad)
 
 
+def clickJobIconMap2Move(location):
+    location = position(location.x, location.y)
+    clickAbsolute(location)
+    time.sleep(2)
+
+
 def moveMapforJobIcon():
     trytime = 3
     isJobIconInEdge = "edge"
     while isJobIconInEdge == "edge" or isJobIconInEdge == "outCenter"\
             or isJobIconInEdge == "None":
+        [location, isJobIconInEdge] = getJobIconMapPosition()
+        clickJobIconMap2Move(location)
         [location, isJobIconInEdge] = getJobIconMapPosition()
         if location is not None and isJobIconInEdge == "realCenter":
             return location
@@ -550,7 +558,7 @@ def jobDistanceFromJobPage():
 
 
 def jobDistance(type):
-    fly(1, 1, forward)
+    # fly(1, 1, forward) 由于有手动修正，准确率不需要通过变位置来提高了
     if type == "Big":
         exceptAns = 300
     elif type == "Small":
@@ -565,7 +573,7 @@ def jobDistance(type):
 
 
 def checkJobDistance():
-    fly(1, 1, forward)
+    # fly(1, 1, forward)
     checkDistance = jobDistanceFromMainPage()
     checkJobDistance2 = jobDistanceFromJobPage()
     if checkJobDistance2 is None:
