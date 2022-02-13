@@ -121,12 +121,27 @@ def checkJobDistance():
     return max(checkDistance, checkJobDistance2)
 
 
+def jobTypeJudgedByColor():
+    jobLoc = position(151, 352)
+    px = pyautogui.pixel((jobLoc.x, jobLoc.y))
+    yellowPrint("({},{},{})".format(px[0], px[1], px[2]))
+    pxList = (px[0], px[1], px[2])
+    blue = (162, 245, 255)
+    gold = (254, 205, 0)
+    if isArround(pxList, blue, 10):
+        return "blue"
+    elif isArround(pxList, gold, 10):
+        return "gold"
+
+
 def checkJobType():
     jobType = None
     if checkPicExists(checkJobReceivedImg, checkJobReceivedRegion, 0.7) is not None:
-        jobType = globalJob.changeType("blueDiamond")
+        if jobTypeJudgedByColor() == "blue":
+            jobType = globalJob.changeType("blueDiamond")
     if checkPicExists(checkJobReceivedGoldDiamondImg, checkJobReceivedRegion, 0.7) is not None:
-        jobType = globalJob.changeType("goldDiamond")
+        if jobTypeJudgedByColor() == "gold":
+            jobType = globalJob.changeType("goldDiamond")
     return yellowPrint(jobType)
 
 

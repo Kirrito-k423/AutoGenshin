@@ -57,6 +57,19 @@ def Random(num):
     return round(random.uniform(0, num), 2)
 
 
+def isArround(listA, listB, delta):
+    if len(listA) != len(listB):
+        errorPrint("isArround inputLength not equal!!!")
+        return 0
+    for a in listA:
+        for b in listB:
+            if a < b-delta or a > b+delta:
+                errorPrint("not Arround")
+                return 0
+    passPrint("isArround")
+    return 1
+
+
 def testTime(whileTimes, function):
     histogramsData = []
     begin = time.time()

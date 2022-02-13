@@ -8,6 +8,7 @@ def isAttack():
     while haveJob is None:
         haveJob = checkJobType()
         awakeJob()
+    jobLoc = position(150, 351)
     im = pyautogui.screenshot(region=(jobLoc.x+15, jobLoc.y-13, 140, 26))
     im.save('./tmp/isAttack.png')
     reader = easyocr.Reader(['ch_sim', 'en'])
@@ -52,6 +53,7 @@ def isFindSomeNearDialog():
     while haveJob is None:
         haveJob = checkJobType()
         awakeJob()
+    jobLoc = position(150, 351)
     im = pyautogui.screenshot(region=(jobLoc.x+15, jobLoc.y-13, 140, 26))
     im.save('./tmp/isFindSomeNearDialog.png')
     reader = easyocr.Reader(['ch_sim', 'en'])
@@ -130,7 +132,7 @@ def moveDependsDistance():
             jumpDownFunc()
             fly(1, 1, left)
             if distance > 200:
-                fly(20, 3, forward)
+                fly(20, 2, forward)
             elif distance > 100:
                 fly(10, 2, forward)
             elif distance > 30:
@@ -143,12 +145,16 @@ def goBack2Task():
     distance = jobDistance("Small")
     if distance == -1:
         return -1
+    if distance > 200:
+        maxStuckTime = 14
+    else:
+        maxStuckTime = 10
     fineTuningVisualAngle(distance)
     print("tuning FINISHED!!")
     stuckCount = 0
     while dialogBoxShowed(distance):
         stuckCount += 1
-        if stuckCount == 8:
+        if stuckCount == maxStuckTime:
             goBack()
             stuckCount = 0
             continue

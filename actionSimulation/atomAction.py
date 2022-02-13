@@ -42,6 +42,7 @@ def posDistance(a, b):
 def awakeJob():
     splitLine("awakeJob")
     quickClickAbsolute(absoluteAwakeJob)
+    mouseClear()
 
 
 def getState():
