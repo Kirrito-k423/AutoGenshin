@@ -42,6 +42,10 @@ def sleepRandom(seconds):
     time.sleep(round(random.uniform(0, seconds), 2))
 
 
+def Random(num):
+    return round(random.uniform(0, num), 2)
+
+
 def testTime(whileTimes, function):
     histogramsData = []
     begin = time.time()

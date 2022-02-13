@@ -42,7 +42,7 @@ def go2jobTarget(maxtime):
         return 0
     elif distance == -1:
         return -1
-    elif distance < 300:
+    elif distance < 200:
         return 0
     else:
         go2jobTargetOne()

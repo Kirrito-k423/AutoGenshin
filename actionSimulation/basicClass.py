@@ -3,7 +3,7 @@ import inspect
 import re
 
 
-class genshinState:
+class actionSimulationState:
     power = 0
     remainedDailyTask = 4
     state = 0

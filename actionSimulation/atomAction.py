@@ -80,13 +80,3 @@ def getState():
             break
     colorPrint("{} is state".format(state), "cyan")
     return state
-
-
-def moveScreen(moveDirection):
-    # print(moveDirection)
-    beginPos = mainpageCenter - moveDirection
-    finalPos = mainpageCenter + moveDirection
-    # 800,900表示鼠标拖拽的起始位置，0.2设置鼠标移动快慢
-    pyautogui.moveTo(beginPos.x, beginPos.y, 0.2)
-    # 200,200表示鼠标拖拽的终点位置，0.2设置鼠标拖拽的快慢，“easeOutQuad”表示鼠标拖动先快后慢（多种拖拽方式可选）
-    pyautogui.dragTo(finalPos.x, finalPos.y, 2, pyautogui.easeOutQuad)

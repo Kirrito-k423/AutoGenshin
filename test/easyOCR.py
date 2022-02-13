@@ -4,7 +4,7 @@ import easyocr
 from tsjCommonFunc import *
 import sys
 sys.path.append(
-    "D:\\PowerShell\\github\\waterRPA\\genshinRobot")
+    "D:\\PowerShell\\github\\waterRPA\\actionSimulation")
 # this needs to run only once to load the model into memory
 
 

@@ -81,8 +81,7 @@ def goBack():
     fly(3, 3, right)
 
 
-def key_input(input_words):
-    interval = 1
+def key_input(input_words,    interval=1):
     sleepRandom(interval)
     for word in input_words:
         print("key {}".format(word[0]))
@@ -107,7 +106,6 @@ def clickAbsolute(absolutePos):
     absolutePos = absolutePos + randomShift(5)
     pyautogui.click(absolutePos.x, absolutePos.y, clicks=1,
                     interval=0.2, duration=0.2, button="left")
-    time.sleep(2)
 
 
 def quickClickAbsolute(absolutePos):
@@ -125,7 +123,6 @@ def clickShift(shiftPos):
     clickPosition = clickPosition + randomShift(15)
     pyautogui.click(clickPosition.x, clickPosition.y, clicks=1,
                     interval=0.2, duration=0.2, button="left")
-    time.sleep(2)
 
 
 def mouseMove(x, y):
@@ -140,3 +137,25 @@ def mouseMove(x, y):
     # 200,200表示鼠标拖拽的终点位置，0.2设置鼠标拖拽的快慢，“easeOutQuad”表示鼠标拖动先快后慢（多种拖拽方式可选）
     pyautogui.dragTo(finalPos.x, finalPos.y, 2, pyautogui.easeOutQuad)
     # pyautogui.click(centerPos.x, centerPos.y)  # 鼠标移动到
+
+
+def randomDragMode():
+    modenum = random.randint(0, 4)
+    mode = ["pyautogui.easeInQuad",
+            "pyautogui.easeOutQuad",
+            "pyautogui.easeInOutQuad",
+            "pyautogui.easeInBounce",
+            "pyautogui.easeInElastic"]
+    return mode[modenum]
+
+
+def moveScreen(moveDirection, dragtime=1):
+    # print(moveDirection)
+    beginPos = mainpageCenter - moveDirection
+    finalPos = mainpageCenter + moveDirection
+    # 800,900表示鼠标拖拽的起始位置，0.2设置鼠标移动快慢
+    dragtime = Random(dragtime)
+    dragmode = randomDragMode()
+    pyautogui.moveTo(beginPos.x, beginPos.y, 0.1)
+    # 200,200表示鼠标拖拽的终点位置，0.2设置鼠标拖拽的快慢，“easeOutQuad”表示鼠标拖动先快后慢（多种拖拽方式可选）
+    pyautogui.dragTo(finalPos.x, finalPos.y, dragtime, dragmode)

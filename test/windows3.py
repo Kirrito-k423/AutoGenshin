@@ -14,7 +14,7 @@ def openMap():
                     interval=0.2, duration=0.2, button="left")
 
 
-class genshinState:
+class gameState:
     power = 0
     remainedDailyTask = 4
     state = 0
