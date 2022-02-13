@@ -12,6 +12,7 @@ def back2mainPage():
             dialog()
         else:
             keyExit()
+        time.sleep(1.5)
         print("back2mainPage…………")
         state = getState()
 # def mouseMove(shift):

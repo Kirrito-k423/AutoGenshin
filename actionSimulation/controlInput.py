@@ -141,11 +141,11 @@ def mouseMove(x, y):
 
 def randomDragMode():
     modenum = random.randint(0, 4)
-    mode = ["pyautogui.easeInQuad",
-            "pyautogui.easeOutQuad",
-            "pyautogui.easeInOutQuad",
-            "pyautogui.easeInBounce",
-            "pyautogui.easeInElastic"]
+    mode = [pyautogui.easeInQuad,
+            pyautogui.easeOutQuad,
+            pyautogui.easeInOutQuad,
+            pyautogui.easeInBounce,
+            pyautogui.easeInElastic]
     return mode[modenum]
 
 
@@ -159,3 +159,8 @@ def moveScreen(moveDirection, dragtime=1):
     pyautogui.moveTo(beginPos.x, beginPos.y, 0.1)
     # 200,200表示鼠标拖拽的终点位置，0.2设置鼠标拖拽的快慢，“easeOutQuad”表示鼠标拖动先快后慢（多种拖拽方式可选）
     pyautogui.dragTo(finalPos.x, finalPos.y, dragtime, dragmode)
+
+
+def mouseClear():
+    clickShift(shiftCenter)
+    pyautogui.moveTo(1, 1, 0.1)

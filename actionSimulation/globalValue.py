@@ -34,9 +34,9 @@ shiftAccIcon = position(1115, 690)
 absoluteAwakeJob = position(151, 351)
 absoluteFirstDialogChoice = position(925, 622)
 absolutedialogX = position(1320, 171)
-absolutePerson1Skill = position(1164, 295)
-absolutePerson2Skill = position(1164, 368)
-absolutePerson3Skill = position(1164, 443)
+absolutePersonSkill = [position(1164, 295),
+                       position(1164, 368),
+                       position(1164, 443)]
 absolutePerson = [position(1320, 295),
                   position(1164, 368),
                   position(1164, 443)]

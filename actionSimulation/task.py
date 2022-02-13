@@ -20,11 +20,9 @@ def isAttack():
         return 0
 
 
-def fourBigSkills():
+def fourBigSkills(num):
     # three other gui
-    quickClickAbsolute(absolutePerson1Skill)
-    quickClickAbsolute(absolutePerson2Skill)
-    quickClickAbsolute(absolutePerson3Skill)
+    quickClickAbsolute(absolutePersonSkill[num-1])
 
 
 def changePerson(num):
@@ -32,19 +30,20 @@ def changePerson(num):
 
 
 def combo():
-    input = [[attackIcon, 5, const.shortPress],
+    input = [[attackIcon, 2, const.shortPress],
              [smallSkills, 1, const.longPress],
-             [attackIcon, 5, const.shortPress]]
+             [attackIcon, 3, const.shortPress]]
     key_input(input)
 
 
 def Attack(num):
-    colorPrint("塔塔开！！！", "yellow")
+    colorPrint("{} 塔塔开！！！".format(num), "yellow")
+    fly(1, 1, right)
     combo()
-    fourBigSkills()
-    combo()
-    changePerson(num)
+    fourBigSkills(num)
     fly(1, 1, forward)
+    changePerson(num)
+    fly(1, 1, left)
 
 
 def isFindSomeNearDialog():

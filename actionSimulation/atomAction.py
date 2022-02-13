@@ -29,9 +29,9 @@ def checkPicExists(Img, region, confidence):
     location = pyautogui.locateCenterOnScreen(
         Img, region=region, confidence=confidence)
     if location is not None:
-        print("{} is Existed ({},{})".format(Img, location.x, location.y))
+        passPrint("{} is Existed ({},{})".format(Img, location.x, location.y))
     else:
-        print("{} is NOT Existed".format(Img))
+        errorPrint("{} is NOT Existed".format(Img))
     return location
 
 

@@ -36,7 +36,7 @@ def jobMapEdgeRegion(part):
 def checkJobIconMapPosition(direction):
     if direction == "center" or direction == "realCenter":
         location = checkPicExists(
-            jobMapImg2, jobMapEdgeRegion(direction), 0.7)
+            jobMapImg2, jobMapEdgeRegion(direction), 0.8)
     else:
         location = checkPicExists(jobMapImg, jobMapEdgeRegion(direction), 0.9)
     if location is not None:
@@ -101,6 +101,7 @@ def clickJobIconMap2Move(location):
     location = position(location.x, location.y)
     clickAbsolute(location)
     time.sleep(2)
+    mouseClear()
 
 
 def moveMapforJobIcon():
@@ -154,20 +155,21 @@ def getNearestTransport(targetPosition):
 
 def transPort(transportPosition):
     splitLine("transportPosition")
-    clickAbsolute(transportPosition)
-    transportAccLocation = pyautogui.locateCenterOnScreen(
-        transportAccImg, region=transportAccRegion, confidence=0.8)
-    if transportAccLocation is not None:
-        clickShift(shiftAccIcon)
-        return 0
-    else:
-        transportTextLocation = pyautogui.locateCenterOnScreen(
-            transportTextImg, region=transportTextRegion, confidence=0.9)
-    if transportTextLocation is None:
-        print("no transPort showed?!")
-        return -1
-    else:
-        clickAbsolute(position(transportTextLocation.x,
-                               transportTextLocation.y))
-        clickShift(shiftAccIcon)
-        return 0
+    while True:
+        clickAbsolute(transportPosition)
+        time.sleep(1)
+        transportAccLocation = pyautogui.locateCenterOnScreen(
+            transportAccImg, region=transportAccRegion, confidence=0.8)
+        if transportAccLocation is not None:
+            clickShift(shiftAccIcon)
+            return 0
+        else:
+            transportTextLocation = pyautogui.locateCenterOnScreen(
+                transportTextImg, region=transportTextRegion, confidence=0.9)
+        if transportTextLocation is None:
+            errorPrint("no transPort showed?!")
+        else:
+            clickAbsolute(position(transportTextLocation.x,
+                                   transportTextLocation.y))
+            clickShift(shiftAccIcon)
+            return 0
