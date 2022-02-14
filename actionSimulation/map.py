@@ -40,6 +40,9 @@ def checkJobMapKind2(direction):
     elif globalJob.type == "goldDiamond":
         return checkPicExists(
             jobMapGoldImg2, jobMapEdgeRegion(direction), 0.8)
+    elif globalJob.type == "MainIcon":
+        return checkPicExists(
+            jobMapMainImg2, jobMapEdgeRegion(direction), 0.8)
 
 
 def checkJobMapKind(direction):
@@ -49,6 +52,9 @@ def checkJobMapKind(direction):
     elif globalJob.type == "goldDiamond":
         return checkPicExists(
             jobMapGoldImg, jobMapEdgeRegion(direction), 0.8)
+    elif globalJob.type == "MainIcon":
+        return checkPicExists(
+            jobMapMainImg, jobMapEdgeRegion(direction), 0.8)
 
 
 def checkJobIconMapPosition(direction):

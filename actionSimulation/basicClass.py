@@ -3,6 +3,29 @@ import inspect
 import re
 
 
+class COMBO:
+    name = ''
+    combo = []
+    nextCharacter = ''
+
+    def __init__(self, name, combo, nextCharacter):
+        self.name = name
+        self.combo = combo
+        self.nextCharacter = nextCharacter
+
+
+class team:
+    charactorNameList = ''
+    currentName = ''
+
+    def __init__(self, namelist):
+        self.charactorNameList = namelist
+
+    def changeNameList(self, namelist, currentName):
+        self.charactorNameList = namelist
+        self.currentName = currentName
+
+
 class job:
     type = ""
     isReceived = False

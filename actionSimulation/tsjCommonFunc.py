@@ -61,11 +61,12 @@ def isArround(listA, listB, delta):
     if len(listA) != len(listB):
         errorPrint("isArround inputLength not equal!!!")
         return 0
-    for a in listA:
-        for b in listB:
-            if a < b-delta or a > b+delta:
-                errorPrint("not Arround")
-                return 0
+    for i in range(0, len(listA)):
+        a = listA[i]
+        b = listB[i]
+        if a < b-delta or a > b+delta:
+            errorPrint("not Arround")
+            return 0
     passPrint("isArround")
     return 1
 

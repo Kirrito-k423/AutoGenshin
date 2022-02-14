@@ -54,6 +54,9 @@ def findJobPageJobIconLoc():
     elif globalJob.type == 'goldDiamond':
         return pyautogui.locateCenterOnScreen(
             jobPageJobIconGoldImg, region=jobPageJobIconRegin, confidence=0.8)
+    elif globalJob.type == 'MainIcon':
+        return pyautogui.locateCenterOnScreen(
+            jobPageJobIconMainImg, region=jobPageJobIconRegin, confidence=0.8)
 
 
 def jobDistanceFromJobPage():
@@ -107,12 +110,20 @@ def findJobFineTuningImg():
         if location is None:
             location = pyautogui.locateCenterOnScreen(
                 jobFineTuningBigGlodImg, region=jobFineTuningRegin, confidence=0.8)
+    elif globalJob.type == "MainIcon":
+        location = pyautogui.locateCenterOnScreen(
+            jobFineTuningMainImg, region=jobFineTuningRegin, confidence=0.8)
+        if location is None:
+            location = pyautogui.locateCenterOnScreen(
+                jobFineTuningBigMainImg, region=jobFineTuningRegin, confidence=0.8)
     return location
 
 
 def checkJobDistance():
     # fly(1, 1, forward)
     checkDistance = jobDistanceFromMainPage()
+    if checkDistance == -1:
+        return -1
     checkJobDistance2 = jobDistanceFromJobPage()
     if checkJobDistance2 is None:
         checkJobDistance2 = 0
@@ -123,15 +134,18 @@ def checkJobDistance():
 
 def jobTypeJudgedByColor():
     jobLoc = position(151, 352)
-    px = pyautogui.pixel((jobLoc.x, jobLoc.y))
+    px = pyautogui.pixel(jobLoc.x, jobLoc.y)
     yellowPrint("({},{},{})".format(px[0], px[1], px[2]))
     pxList = (px[0], px[1], px[2])
     blue = (162, 245, 255)
     gold = (254, 205, 0)
+    mainGlod = (248, 235, 4)
     if isArround(pxList, blue, 10):
         return "blue"
     elif isArround(pxList, gold, 10):
         return "gold"
+    elif isArround(pxList, mainGlod, 10):
+        return "mainGlod"
 
 
 def checkJobType():
@@ -142,6 +156,9 @@ def checkJobType():
     if checkPicExists(checkJobReceivedGoldDiamondImg, checkJobReceivedRegion, 0.7) is not None:
         if jobTypeJudgedByColor() == "gold":
             jobType = globalJob.changeType("goldDiamond")
+    if checkPicExists(checkJobReceivedMainImg, checkJobReceivedRegion, 0.7) is not None:
+        if jobTypeJudgedByColor() == "mainGlod":
+            jobType = globalJob.changeType("MainIcon")
     return yellowPrint(jobType)
 
 

@@ -22,9 +22,9 @@ def receiveJob(jobID):
     openJobPage()
     clickShift(shiftJobClassIcon[jobID])
     if checkJobReceivedFromJobPage() == True:
-        keyExit()
-    else:
         clickShift(shiftAccIcon)
+    else:
+        keyExit()
     waitPageChangeTo("mainPage")
 
 
@@ -67,20 +67,23 @@ def simpleAttackTest():
 
 
 def test():
+    back2mainPage()
+    confirmTeam()
     while True:
-        back2mainPage()
         # 接取任务
         if checkJobType() is None:
             receiveJob(const.mainJob)
         if checkJobType() is not None:
             # # # 检查 - 任务接取完成，地图移动 传送
-            go2jobTarget(1)
+            isGet2Task = go2jobTarget(1)
             completePrint("Big Move Complete!")
             # 微调视角，移动，对话
-            go2jobTargetDetail()
+            if isGet2Task != -1:
+                go2jobTargetDetail()
             # 具体任务
             toDoTask()
         time.sleep(2)
+        back2mainPage()
 
     # 攻击测试
         # simpleAttackTest()
@@ -91,4 +94,5 @@ if __name__ == '__main__':
         print("not found process! over")
         sys.exit()
 
-    test()
+    # test()
+    Attack()

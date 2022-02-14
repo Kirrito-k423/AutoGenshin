@@ -26,7 +26,7 @@ def reset_window_pos(x, y, reName):
             left, top, right, bottom = win32gui.GetWindowRect(hwnd)
             height = bottom - top
             width = right - left
-            print("{} {}".format(height, width))
+            print("y {} x {}".format(height, width))
             win32gui.SetWindowPos(hwnd, win32con.HWND_TOPMOST, x,
                                   y, width, height, win32con.SWP_SHOWWINDOW)
             win32gui.BringWindowToTop(hwnd)
@@ -34,8 +34,7 @@ def reset_window_pos(x, y, reName):
             shell = win32com.client.Dispatch("WScript.Shell")
             shell.SendKeys('%')
             win32gui.SetForegroundWindow(hwnd)
-            return 0
-    return 1
+    return 0
 
 
 def keyExit():

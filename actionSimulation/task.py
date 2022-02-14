@@ -15,7 +15,7 @@ def isAttack():
     text = reader.readtext('./tmp/isAttack.png')
     print(text)
     passPrint(text[0][1])
-    if re.search(r"(解救)|(保护)|(击败)", text[0][1]) is not None:
+    if re.search(r"(解救)|(保护)|(击败)|(打倒)", text[0][1]) is not None:
         return 1
     else:
         return 0
@@ -27,24 +27,39 @@ def fourBigSkills(num):
 
 
 def changePerson(num):
-    quickClickAbsolute(absolutePerson[num-1])
+    changeBenchByName(
+        characterAttackComboByName[globalTeam.currentName].nextCharacter)
 
 
-def combo():
-    input = [[attackIcon, 2, const.shortPress],
-             [smallSkills, 1, const.longPress],
-             [attackIcon, 3, const.shortPress]]
+def combo(input):
     key_input(input)
+
+
+def charactorChangeByName(name):
+    if globalTeam.currentName == name:
+        return 0
+    else:
+        changeBenchByName(name)
+
+
+def zhongliBABA():
+    yellowPrint("坚如磐石~~")
+    charactorChangeByName("钟离")
+    combo(characterSaveComboByName["钟离"].combo)
+
+
+def currentAttack():
+    combo(characterAttackComboByName[globalTeam.currentName].combo)
 
 
 def Attack(num):
     colorPrint("{} 塔塔开！！！".format(num), "yellow")
-    fly(1, 1, right)
-    combo()
-    fourBigSkills(num)
-    fly(1, 1, forward)
-    changePerson(num)
-    fly(1, 1, left)
+    zhongliBABA()
+    fly(1, 0, right)
+    currentAttack()
+    fly(1, 0, forward)
+    changePerson()
+    fly(1, 0, left)
 
 
 def isFindSomeNearDialog():
@@ -192,7 +207,8 @@ def fineTuningVisualAngle(distance):
             awakeJob()
             if jobDistance("Small") == -1:
                 isNeededTuningAngle = -1
-            break
+                break
+            continue
         location = position(location.x, location.y)
         if location.y > 650 or location.y < 270 or (location.x > 690 and location.x < 940):
             accuracyRank = 2
@@ -205,3 +221,44 @@ def fineTuningVisualAngle(distance):
         moveDirection = math.pow(0.5, accuracyRank) * moveDirection
         moveScreen(moveDirection)
     return isNeededTuningAngle
+
+
+def readBenchText():
+    im = pyautogui.screenshot(region=(1220, 271, 75, 190))
+    im.save('./tmp/nameOrderInBench.png')
+    reader = easyocr.Reader(['ch_sim', 'en'])
+    return reader.readtext('./tmp/nameOrderInBench.png')
+
+
+def nameOrderInBench(name):
+    text = readBenchText()
+    if name == text[0][1]:
+        return 0
+    elif name == text[1][1]:
+        return 1
+    elif name == text[2][1]:
+        return 2
+    else:
+        return -1
+
+
+def changeBenchByName(name):
+    order = nameOrderInBench(name)
+    if order == -1:
+        errorPrint("no charactor in bench")
+        return 0
+    clickAbsolute(absolutePerson[order])
+    globalTeam.currentName = name
+    time.sleep(1.2)  # 换人冷却
+
+
+def confirmTeam():
+    splitLine("confirmTeam")
+    text = readBenchText()
+    firstTeam3 = {text[0][1], text[1][1], text[2][1]}
+    yellowPrint(firstTeam3)
+    changeBenchByName(text[0][1])
+    text = readBenchText()
+    secondTeam3 = {text[0][1], text[1][1], text[2][1]}
+    globalTeam.changeNameList(yellowPrint(
+        firstTeam3 | secondTeam3), yellowPrint(firstTeam3-secondTeam3))
