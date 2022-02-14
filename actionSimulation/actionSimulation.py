@@ -1,4 +1,5 @@
 # coding=utf-8
+from math import comb
 from task import *
 from map import *
 import sys
@@ -93,6 +94,8 @@ if __name__ == '__main__':
     if reset_window_pos(origin.x, origin.y, regexName):
         print("not found process! over")
         sys.exit()
-
+    confirmTeam()
     # test()
-    Attack()
+    while 100:
+        # combo(characterAttackComboByName["钟离"].combo)
+        Attack(3)

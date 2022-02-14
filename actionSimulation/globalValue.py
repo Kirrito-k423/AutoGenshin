@@ -43,8 +43,8 @@ absolutePersonSkill = [position(1164, 295),
                        position(1164, 368),
                        position(1164, 443)]
 absolutePerson = [position(1320, 295),
-                  position(1164, 368),
-                  position(1164, 443)]
+                  position(1320, 368),
+                  position(1320, 443)]
 
 # 相对偏移
 wordShiftIconInJobPage = position(-380, 0)
@@ -78,13 +78,13 @@ easyOCRFix = {'O': '0', 'o': '0',
               'g': '9',
               'e': '12'}
 
-characterAttackComboByName = {"钟离": COMBO("钟离", [[smallSkills, 1, const.longPress], [attackIcon, 1, const.shortPress], [maxSkills, 1, const.shortPress]], None),
-                              "行秋": COMBO("行秋", [[attackIcon, 1, const.shortPress], [smallSkills, 1, const.shortPress], [maxSkills, 1, const.shortPress]], "香菱"),
+characterAttackComboByName = {"钟离": COMBO("钟离", [[smallSkills, 0.8, const.longPress], [attackIcon, 1, const.shortPress], [maxSkills, 1, const.shortPress]], None),
+                              "行秋": COMBO("行秋", [[maxSkills, 1, const.shortPress], [smallSkills, 1, const.shortPress], [attackIcon, 7, const.shortPress]], "香菱"),
                               "香菱": COMBO("香菱", [[attackIcon, 1, const.shortPress], [smallSkills, 1, const.shortPress], [maxSkills, 1, const.shortPress]], "钟离"),
-                              "菲谢尔": COMBO("菲谢尔", [[smallSkills, 1, const.shortPress]], "钟离")}
+                              "菲谢尔": COMBO("菲谢尔", [[smallSkills, 1, const.shortPress]], "行秋")}
 # 奶 盾角色combo
-characterSaveComboByName = {"钟离": COMBO("钟离盾来", [[smallSkills, 1, const.longPress], [
-                                        attackIcon, 1, const.shortPress], [maxSkills, 1, const.shortPress]], None)}
+characterSaveComboByName = {"钟离": COMBO(
+    "钟离盾来", [[smallSkills, 0.8, const.longPress]], None)}
 # imgPath
 checkJobReceivedImg = "./Img/checkJobReceivedImg.png"
 checkJobReceivedRegion = (130, 330, 36, 36)
@@ -104,6 +104,7 @@ decideMapExitIconRegin = (1270, 140, 120, 100)
 jobPageJobIconRegin = (560, 180, 140, 600)
 uniqueJobPageRegin = (120, 750, 100, 100)
 dialogXRegin = (1292, 150, 80, 80)
+headsRegin = (1288, 246, 87, 244)
 jobMapImg = "./Img/jobMapImg.png"
 jobMapGoldImg = "./Img/jobMapImgGold.png"
 jobMapMainImg = "./Img/jobMapImgMain.png"
@@ -137,3 +138,8 @@ jobMapLeft = 203
 jobMapBottom = 755
 jobMapRight = 1283
 jobMapSearchHalfWidth = 28
+heads = {"钟离": "./Img/headzhongli.png",
+         "香菱": "./Img/headxiangling.png",
+         "行秋": "./Img/headxingqiu.png",
+         "菲谢尔": "./Img/headfeixieer.png"
+         }

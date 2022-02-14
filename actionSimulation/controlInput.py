@@ -68,7 +68,7 @@ def fly(times, interval, direction):
         sleepRandom(0.3)
         win32api.keybd_event(
             VK_CODE[jump], 0, win32con.KEYEVENTF_KEYUP, 0)  # 松开按键
-        sleepRandom(interval)
+        sleepRandom(0.3+interval)
         win32api.keybd_event(
             VK_CODE[direction], 0, win32con.KEYEVENTF_KEYUP, 0)  # 松开按键
         times -= 1
@@ -85,12 +85,15 @@ def key_input(input_words,    interval=1):
     for word in input_words:
         print("key {}".format(word[0]))
         if word[2] == const.shortPress:
-            while word[1]:
+            tmp = word[1]
+            while tmp:
+                print("shortTimes {}".format(tmp))
                 win32api.keybd_event(VK_CODE[word[0]], 0, 0, 0)  # 按下键
+                sleepRandom(0.1)
                 win32api.keybd_event(
                     VK_CODE[word[0]], 0, win32con.KEYEVENTF_KEYUP, 0)  # 松开按键
                 sleepRandom(interval)
-                word[1] -= 1
+                tmp -= 1
         elif word[2] == const.longPress:
             win32api.keybd_event(VK_CODE[word[0]], 0, 0, 0)  # 按下键
             time.sleep(word[1])
@@ -105,6 +108,7 @@ def clickAbsolute(absolutePos):
     absolutePos = absolutePos + randomShift(5)
     pyautogui.click(absolutePos.x, absolutePos.y, clicks=1,
                     interval=0.2, duration=0.2, button="left")
+    mouseMoveAway()
 
 
 def quickClickAbsolute(absolutePos):
@@ -113,6 +117,7 @@ def quickClickAbsolute(absolutePos):
     absolutePos = absolutePos + randomShift(5)
     pyautogui.click(absolutePos.x, absolutePos.y, clicks=1,
                     interval=0.2, duration=0.2, button="left")
+    mouseMoveAway()
 
 
 def clickShift(shiftPos):
@@ -122,6 +127,7 @@ def clickShift(shiftPos):
     clickPosition = clickPosition + randomShift(15)
     pyautogui.click(clickPosition.x, clickPosition.y, clicks=1,
                     interval=0.2, duration=0.2, button="left")
+    mouseMoveAway()
 
 
 def mouseMove(x, y):
@@ -162,4 +168,8 @@ def moveScreen(moveDirection, dragtime=1):
 
 def mouseClear():
     clickShift(shiftCenter)
+    pyautogui.moveTo(1, 1, 0.1)
+
+
+def mouseMoveAway():
     pyautogui.moveTo(1, 1, 0.1)

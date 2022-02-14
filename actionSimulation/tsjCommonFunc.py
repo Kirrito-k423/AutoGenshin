@@ -3,6 +3,7 @@ import os
 import time
 import random
 import plotille
+import pprint
 
 
 def errorPrint(message):
@@ -15,6 +16,12 @@ def colorPrint(message, color):
     os.system('color')
     print(colored(message, color))
     return message
+
+
+def pPrint(message):
+    print("\n")
+    pprint.pprint(message)
+    print("\n")
 
 
 def yellowPrint(message):
@@ -35,9 +42,10 @@ def completePrint(message):
     return message
 
 
-def splitLine(string):
+def splitLine(string, color="white"):
     print("\n")
-    print("--------------------------------{}--------------------------------".format(string))
+    colorPrint(
+        "--------------------------------{}--------------------------------".format(string), color)
     print("\n")
     return string
 
@@ -50,11 +58,18 @@ def histogramsPrint(data, type="vertical"):
 
 
 def sleepRandom(seconds):
-    time.sleep(round(random.uniform(0, seconds), 2))
+    time.sleep(round(random.uniform(0.15, seconds+0.15), 2))
 
 
 def Random(num):
     return round(random.uniform(0, num), 2)
+
+
+def textBelong(small, big):
+    for i in small:
+        if i in big:
+            return 1
+    return 0
 
 
 def isArround(listA, listB, delta):

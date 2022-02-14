@@ -26,13 +26,19 @@ def fourBigSkills(num):
     quickClickAbsolute(absolutePersonSkill[num-1])
 
 
-def changePerson(num):
-    changeBenchByName(
-        characterAttackComboByName[globalTeam.currentName].nextCharacter)
+def changePerson():
+    splitLine("changePerson")
+    nextName = characterAttackComboByName[globalTeam.currentName].nextCharacter
+    if nextName is None:
+        text = readBenchText()
+        benchTeam3 = [text[0], text[1], text[2]]
+        nextName = benchTeam3[random.randint(0, 2)]
+    changeBenchByName(nextName)
 
 
 def combo(input):
-    key_input(input)
+    key_input(input, 0.7)
+    time.sleep(2)
 
 
 def charactorChangeByName(name):
@@ -43,23 +49,48 @@ def charactorChangeByName(name):
 
 
 def zhongliBABA():
-    yellowPrint("坚如磐石~~")
+    passPrint("坚如磐石~~")
     charactorChangeByName("钟离")
     combo(characterSaveComboByName["钟离"].combo)
 
 
 def currentAttack():
-    combo(characterAttackComboByName[globalTeam.currentName].combo)
+    combo((characterAttackComboByName[globalTeam.currentName]).combo)
 
 
-def Attack(num):
-    colorPrint("{} 塔塔开！！！".format(num), "yellow")
-    zhongliBABA()
-    fly(1, 0, right)
-    currentAttack()
-    fly(1, 0, forward)
-    changePerson()
+def isNotHealth():
+    bloodLoc = position(638, 799)
+    px = pyautogui.pixel(bloodLoc.x, bloodLoc.y)
+    yellowPrint("({},{},{})".format(px[0], px[1], px[2]))
+    pxList = (px[0], px[1], px[2])
+    green = (150, 215, 34)
+    if isArround(pxList, green, 10):
+        return 0
+    return 1
+
+
+def someoneSaveMe():
+    return 0
+
+
+def isNeededSave():
+    if isNotHealth():
+        someoneSaveMe()
+
+
+def Attack(num=1):
+    splitLine("{} 塔塔开！！！".format(num), "yellow")
     fly(1, 0, left)
+    fly(1, 0, forward)
+    zhongliBABA()
+    isNeededSave()
+    # fly(1, 0, right)
+    changePerson()
+    currentAttack()
+    # fly(1, 0, forward)
+    changePerson()
+    currentAttack()
+    # fly(1, 0, left)
 
 
 def isFindSomeNearDialog():
@@ -224,41 +255,68 @@ def fineTuningVisualAngle(distance):
 
 
 def readBenchText():
-    im = pyautogui.screenshot(region=(1220, 271, 75, 190))
-    im.save('./tmp/nameOrderInBench.png')
-    reader = easyocr.Reader(['ch_sim', 'en'])
-    return reader.readtext('./tmp/nameOrderInBench.png')
+    # result = {}
+    time.sleep(1)
+    name = {}
+    while len(name) != 3:
+        for nameKey, ImgValue in heads.items():
+            print(nameKey)
+            location = pyautogui.locateCenterOnScreen(
+                ImgValue, region=headsRegin, confidence=0.8)
+            if location is not None:
+                passPrint("yes! the head")
+                if nameKey not in name:
+                    name[nameKey] = location.y
+                    # result[location.y] = nameKey
+            else:
+                errorPrint("not this head")
+    # ans = [result[x] for x in sorted(result)]
+    pPrint(sorted(name.items(), key=lambda kv: kv[1]))
+    ans = [x for x, y in sorted(name.items(), key=lambda kv: kv[1])]
+    pPrint(ans)
+    return ans
+    # result = []
+    # while len(result) != 3:
+    #     im = pyautogui.screenshot(region=(1220, 271, 75, 190))
+    #     im.save('./tmp/nameOrderInBench.png')
+    #     reader = easyocr.Reader(['ch_sim', 'en'])
+    #     result = reader.readtext('./tmp/nameOrderInBench.png')
+    #     time.sleep(0.2)
+    # pPrint(result)
+    # return result
 
 
 def nameOrderInBench(name):
     text = readBenchText()
-    if name == text[0][1]:
+    if textBelong(text[0], name):
         return 0
-    elif name == text[1][1]:
+    elif textBelong(text[1], name):
         return 1
-    elif name == text[2][1]:
+    elif textBelong(text[2], name):
         return 2
     else:
         return -1
 
 
 def changeBenchByName(name):
+    yellowPrint(name)
     order = nameOrderInBench(name)
     if order == -1:
-        errorPrint("no charactor in bench")
+        errorPrint("{} no charactor in bench".format(name))
         return 0
     clickAbsolute(absolutePerson[order])
     globalTeam.currentName = name
-    time.sleep(1.2)  # 换人冷却
+    passPrint(globalTeam.currentName)
+    time.sleep(0.2)  # 换人冷却
 
 
 def confirmTeam():
     splitLine("confirmTeam")
     text = readBenchText()
-    firstTeam3 = {text[0][1], text[1][1], text[2][1]}
+    firstTeam3 = {text[0], text[1], text[2]}
     yellowPrint(firstTeam3)
-    changeBenchByName(text[0][1])
+    changeBenchByName(text[0])
     text = readBenchText()
-    secondTeam3 = {text[0][1], text[1][1], text[2][1]}
+    secondTeam3 = {text[0], text[1], text[2]}
     globalTeam.changeNameList(yellowPrint(
         firstTeam3 | secondTeam3), yellowPrint(firstTeam3-secondTeam3))
