@@ -1,18 +1,17 @@
-
 from basicClass import position, const, job, team, COMBO
 
 # regexName = "模拟器1"
 regexName = "BlueStacks"
 
 # 攻击按键映射
-attackIcon = 'Spacebar'
-smallSkills = 'E'
-maxSkills = 'R'
-forward = 'W'
-backward = 'S'
-right = 'D'
-left = 'A'
-jump = 'Control'
+attackIcon = "Spacebar"
+smallSkills = "E"
+maxSkills = "R"
+forward = "W"
+backward = "S"
+right = "D"
+left = "A"
+jump = "Control"
 jumpDown = attackIcon
 
 globalJob = job("None")
@@ -29,62 +28,113 @@ scale = position(600, 500)
 shiftMap = position(144, 130)
 shiftCenter = position(690, 245)
 shiftJobIcon = position(50, 200)
-shiftJobClassIcon = [position(68, 161),
-                     position(68, 238),
-                     position(68, 323),
-                     position(68, 403),
-                     position(68, 483)]
+shiftJobClassIcon = [
+    position(68, 161),
+    position(68, 238),
+    position(68, 323),
+    position(68, 403),
+    position(68, 483),
+]
 shiftAccIcon = position(1115, 690)
 
 absoluteAwakeJob = position(151, 351)
 absoluteFirstDialogChoice = position(925, 622)
 absolutedialogX = position(1320, 171)
-absolutePersonSkill = [position(1164, 295),
-                       position(1164, 368),
-                       position(1164, 443)]
-absolutePerson = [position(1320, 295),
-                  position(1320, 368),
-                  position(1320, 443)]
+absolutePersonSkill = [position(1164, 295), position(1164, 368), position(1164, 443)]
+absolutePerson = [position(1320, 295), position(1320, 368), position(1320, 443)]
 
 # 相对偏移
 wordShiftIconInJobPage = position(-380, 0)
 
 # const
 const.longPress = 2333
-const.shortPress = 'yahaha'
+const.shortPress = "yahaha"
 const.mainJob = 1
 const.worldJob = 4
 const.checkJobReceived = 1
 # code https://blog.csdn.net/chang1976272446/article/details/103761029
 # https://cxymm.net/article/weixin_39552874/110753639
-VK_CODE = {'Esc': 27,
-           'W':	87,
-           'A':	65,
-           'S':	83,
-           'D':	68,
-           'E':	69,
-           'R': 0x52,
-           'Shift'	: 16,
-           'Control'	: 17,
-           'Spacebar':	32
-           }
-easyOCRFix = {'O': '0', 'o': '0',
-              'l': '1', 'I': '1', 'i': '1',
-              'D': '2',
-              'B': '3',
-              'S': '5',
-              'G': '6',
-              'T': '7',
-              'g': '9',
-              'e': '12'}
+VK_CODE = {
+    "Esc": 27,
+    "W": 87,
+    "A": 65,
+    "S": 83,
+    "D": 68,
+    "E": 69,
+    "R": 0x52,
+    "Shift": 16,
+    "Control": 17,
+    "Spacebar": 32,
+}
+easyOCRFix = {
+    "O": "0",
+    "o": "0",
+    "l": "1",
+    "I": "1",
+    "i": "1",
+    "U": "1",
+    "D": "2",
+    "B": "3",
+    "S": "5",
+    "G": "6",
+    "T": "7",
+    "g": "9",
+    "e": "12",
+}
 
-characterAttackComboByName = {"钟离": COMBO("钟离", [[smallSkills, 0.8, const.longPress], [attackIcon, 1, const.shortPress], [maxSkills, 1, const.shortPress]], None),
-                              "行秋": COMBO("行秋", [[maxSkills, 1, const.shortPress], [smallSkills, 1, const.shortPress], [attackIcon, 7, const.shortPress]], "香菱"),
-                              "香菱": COMBO("香菱", [[attackIcon, 1, const.shortPress], [smallSkills, 1, const.shortPress], [maxSkills, 1, const.shortPress]], "钟离"),
-                              "菲谢尔": COMBO("菲谢尔", [[smallSkills, 1, const.shortPress]], "行秋")}
+characterAttackComboByName = {
+    "钟离": COMBO(
+        "钟离",
+        [
+            [smallSkills, 0.8, const.longPress],
+            [attackIcon, 1, const.shortPress],
+            [maxSkills, 1, const.shortPress],
+        ],
+        None,
+    ),
+    "温迪": COMBO(
+        "温迪",
+        [[smallSkills, 1, const.shortPress], [maxSkills, 1, const.shortPress],],
+        "琴",
+    ),
+    "琴": COMBO("琴", [[smallSkills, 1, const.shortPress]], "凝光",),
+    "心海": COMBO("心海", [[smallSkills, 1, const.shortPress]], "凝光",),
+    "凝光": COMBO(
+        "凝光",
+        [
+            [smallSkills, 1, const.shortPress],
+            [attackIcon, 1, const.shortPress],
+            [maxSkills, 1, const.shortPress],
+            [attackIcon, 1, const.shortPress],
+            [attackIcon, 1, const.longPress],
+        ],
+        "钟离",
+    ),
+    "行秋": COMBO(
+        "行秋",
+        [
+            [maxSkills, 1, const.shortPress],
+            [smallSkills, 1, const.shortPress],
+            [attackIcon, 7, const.shortPress],
+        ],
+        "香菱",
+    ),
+    "香菱": COMBO(
+        "香菱",
+        [
+            [attackIcon, 1, const.shortPress],
+            [smallSkills, 1, const.shortPress],
+            [maxSkills, 1, const.shortPress],
+        ],
+        "钟离",
+    ),
+    "菲谢尔": COMBO("菲谢尔", [[smallSkills, 1, const.shortPress]], "行秋"),
+}
 # 奶 盾角色combo
-characterSaveComboByName = {"钟离": COMBO(
-    "钟离盾来", [[smallSkills, 0.8, const.longPress]], None)}
+characterSaveComboByName = {
+    "心海": COMBO("心海", [[smallSkills, 1, const.shortPress]], "钟离",),
+    "钟离": COMBO("钟离盾来", [[smallSkills, 0.8, const.longPress]], None),
+}
 # imgPath
 checkJobReceivedImg = "./Img/checkJobReceivedImg.png"
 checkJobReceivedRegion = (130, 330, 36, 36)
@@ -138,8 +188,13 @@ jobMapLeft = 203
 jobMapBottom = 755
 jobMapRight = 1283
 jobMapSearchHalfWidth = 28
-heads = {"钟离": "./Img/headzhongli.png",
-         "香菱": "./Img/headxiangling.png",
-         "行秋": "./Img/headxingqiu.png",
-         "菲谢尔": "./Img/headfeixieer.png"
-         }
+heads = {
+    "钟离": "./Img/headzhongli.png",
+    "凝光": "./Img/headningguang.png",
+    "温迪": "./Img/headwendi.png",
+    "心海": "./Img/headfeixinhai.png",
+    "琴": "./Img/headqing.png",
+    "香菱": "./Img/headxiangling.png",
+    "行秋": "./Img/headxingqiu.png",
+    "菲谢尔": "./Img/headfeixieer.png",
+}

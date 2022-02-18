@@ -16,6 +16,8 @@ def back2mainPage():
         time.sleep(1.5)
         print("back2mainPage…………")
         state = getState()
+
+
 # def mouseMove(shift):
 
 
@@ -52,7 +54,7 @@ def go2jobTarget(maxtime):
         return 0
     else:
         go2jobTargetOne()
-        go2jobTarget(maxtime-1)
+        go2jobTarget(maxtime - 1)
 
 
 def go2jobTargetDetail():
@@ -73,7 +75,8 @@ def test():
     while True:
         # 接取任务
         if checkJobType() is None:
-            receiveJob(const.mainJob)
+            # receiveJob(const.mainJob)
+            receiveJob(const.worldJob)
         if checkJobType() is not None:
             # # # 检查 - 任务接取完成，地图移动 传送
             isGet2Task = go2jobTarget(1)
@@ -87,11 +90,11 @@ def test():
         back2mainPage()
 
     # 攻击测试
-        # simpleAttackTest()
+    # simpleAttackTest()
 
 
-if __name__ == '__main__':
-    if reset_window_pos(origin.x, origin.y, regexName):
+if __name__ == "__main__":
+    if reset_window_pos(origin.x, origin.y, regexName) == 0:
         print("not found process! over")
         sys.exit()
     # confirmTeam()

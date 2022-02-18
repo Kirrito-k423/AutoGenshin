@@ -1,0 +1,5 @@
+easyocr>=1.4.1
+pypiwin32
+termcolor
+plotille
+pyautogui

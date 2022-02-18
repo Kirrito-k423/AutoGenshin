@@ -15,11 +15,12 @@ def reset_window_pos(x, y, reName):
     hWndList = []
     win32gui.EnumWindows(lambda hWnd, param: param.append(hWnd), hWndList)
     # print(hWndList)
-
+    count=0
     for hwnd in hWndList:
         clsname = win32gui.GetClassName(hwnd)
         title = win32gui.GetWindowText(hwnd)
         if(re.match("(.)*{}(.)*".format(reName), clsname, re.IGNORECASE) or re.match("(.)*{}(.)*".format(reName), title, re.IGNORECASE)):
+            count+=1
             print("~~~~~~~~~~~")
             print(clsname)
             print(title)
@@ -34,7 +35,10 @@ def reset_window_pos(x, y, reName):
             shell = win32com.client.Dispatch("WScript.Shell")
             shell.SendKeys('%')
             win32gui.SetForegroundWindow(hwnd)
-    return 0
+    if count==0:
+        return 0
+    else:
+        return 1
 
 
 def keyExit():
